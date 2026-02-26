@@ -1,49 +1,81 @@
 from django.db import models
-
-from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
-from datetime import timedelta
+
+
+class Usuario(AbstractUser):
+    ROLES = (
+        ('cliente', 'Cliente'),
+        ('administrador', 'Administrador'),
+    )
+
+    nombres = models.CharField(max_length=100)
+    apellidos = models.CharField(max_length=100)
+    telefono = models.CharField(max_length=20)
+    documento_identidad = models.CharField(max_length=20)
+    direccion = models.CharField(max_length=150)
+    ciudad = models.CharField(max_length=100)
+    rol = models.CharField(max_length=20, choices=ROLES, default='cliente')
+    fecha_registro = models.DateTimeField(default=timezone.now)
+    activo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.username
+
+
+class Categoria(models.Model):
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField()
+    activa = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.nombre
 
 
 class Producto(models.Model):
-    ESTADOS = [
+    ESTADOS = (
         ('disponible', 'Disponible'),
-        ('reservado', 'Reservado'),
         ('no_disponible', 'No Disponible'),
-    ]
+    )
 
-    nombre = models.CharField(max_length=200)
-    categoria = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=150)
     descripcion = models.TextField()
     precio = models.DecimalField(max_digits=10, decimal_places=2)
-    estado = models.CharField(max_length=20, choices=ESTADOS, default='disponible')
-    creado = models.DateTimeField(auto_now_add=True)
+    stock_total = models.IntegerField()
+    stock_disponible = models.IntegerField()
+    imagen_url = models.URLField(blank=True, null=True)
+    fecha_creacion = models.DateTimeField(default=timezone.now)
+    activo = models.BooleanField(default=True)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.nombre
 
 
 class Apartado(models.Model):
-    ESTADOS = [
+    ESTADOS = (
         ('pendiente', 'Pendiente'),
         ('confirmado', 'Confirmado'),
         ('cancelado', 'Cancelado'),
-        ('entregado', 'Entregado'),
         ('expirado', 'Expirado'),
-    ]
+        ('entregado', 'Entregado'),
+    )
 
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
-    fecha_apartado = models.DateTimeField(auto_now_add=True)
+    cantidad = models.IntegerField()
+    fecha_apartado = models.DateTimeField(default=timezone.now)
     fecha_expiracion = models.DateTimeField()
+    fecha_confirmacion = models.DateTimeField(blank=True, null=True)
     estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente')
-
-    def save(self, *args, **kwargs):
-        if not self.fecha_expiracion:
-            self.fecha_expiracion = timezone.now() + timedelta(hours=24)
-        super().save(*args, **kwargs)
+    motivo_cancelacion = models.TextField(blank=True, null=True)
+    confirmado_por = models.ForeignKey(
+        Usuario,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='apartados_confirmados'
+    )
 
     def __str__(self):
-        return f"{self.producto.nombre} - {self.usuario.username}"
-
+        return f"{self.usuario.username} - {self.producto.nombre}"
