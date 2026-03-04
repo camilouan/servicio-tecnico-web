@@ -1,0 +1,17 @@
+{% if user.is_authenticated %}
+
+<form method="POST" action="{% url 'apartar' producto.id %}" class="mt-auto">
+{% csrf_token %}
+<div class="input-group">
+<input type="number" name="cantidad" class="form-control" min="1" max="5" value="1">
+<button class="btn btn-primary">Apartar</button>
+</div>
+</form>
+
+{% else %}
+
+<a href="{% url 'login' %}" class="btn btn-outline-primary mt-auto">
+Inicia sesión para apartar
+</a>
+
+{% endif %}

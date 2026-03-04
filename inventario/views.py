@@ -64,3 +64,11 @@ def apartar_producto(request, producto_id):
         producto.save()
 
     return redirect('home')
+
+def landing(request):
+    return render(request, 'landing.html')
+
+
+def productos(request):
+    productos = Producto.objects.all()
+    return render(request, 'productos.html', {'productos': productos})
