@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from cloudinary.models import CloudinaryField
 
 
 class Usuario(AbstractUser):
+
     ROLES = (
         ('cliente', 'Cliente'),
         ('administrador', 'Administrador'),
@@ -15,8 +17,11 @@ class Usuario(AbstractUser):
     documento_identidad = models.CharField(max_length=20)
     direccion = models.CharField(max_length=150)
     ciudad = models.CharField(max_length=100)
+
     rol = models.CharField(max_length=20, choices=ROLES, default='cliente')
+
     fecha_registro = models.DateTimeField(default=timezone.now)
+
     activo = models.BooleanField(default=True)
 
     def __str__(self):
@@ -24,8 +29,11 @@ class Usuario(AbstractUser):
 
 
 class Categoria(models.Model):
+
     nombre = models.CharField(max_length=100)
+
     descripcion = models.TextField()
+
     activa = models.BooleanField(default=True)
 
     def __str__(self):
@@ -33,19 +41,29 @@ class Categoria(models.Model):
 
 
 class Producto(models.Model):
+
     ESTADOS = (
         ('disponible', 'Disponible'),
         ('no_disponible', 'No Disponible'),
     )
 
     nombre = models.CharField(max_length=150)
+
     descripcion = models.TextField()
+
     precio = models.DecimalField(max_digits=10, decimal_places=2)
+
     stock_total = models.IntegerField()
+
     stock_disponible = models.IntegerField()
-    imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
+
+    # 👇 Imagen almacenada en Cloudinary
+    imagen = CloudinaryField('imagen', blank=True, null=True)
+
     fecha_creacion = models.DateTimeField(default=timezone.now)
+
     activo = models.BooleanField(default=True)
+
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -53,6 +71,7 @@ class Producto(models.Model):
 
 
 class Apartado(models.Model):
+
     ESTADOS = (
         ('pendiente', 'Pendiente'),
         ('confirmado', 'Confirmado'),
@@ -62,13 +81,21 @@ class Apartado(models.Model):
     )
 
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+
     cantidad = models.IntegerField()
+
     fecha_apartado = models.DateTimeField(default=timezone.now)
+
     fecha_expiracion = models.DateTimeField()
+
     fecha_confirmacion = models.DateTimeField(blank=True, null=True)
+
     estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente')
+
     motivo_cancelacion = models.TextField(blank=True, null=True)
+
     confirmado_por = models.ForeignKey(
         Usuario,
         on_delete=models.SET_NULL,
