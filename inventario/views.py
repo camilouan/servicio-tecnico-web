@@ -18,7 +18,8 @@ def registro(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('home')
+            # redirige al catálogo, no existe 'home' en urls
+            return redirect('productos')
     else:
         form = RegistroForm()
 
@@ -31,7 +32,8 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('home')
+            # después de iniciar sesión vamos al catálogo de productos
+            return redirect('productos')
     else:
         form = AuthenticationForm()
 
@@ -40,7 +42,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('home')
+    return redirect('landing')  # landing es página inicial pública
 
 
 @login_required
@@ -50,7 +52,7 @@ def apartar_producto(request, producto_id):
     cantidad = int(request.POST.get('cantidad', 1))
 
     if cantidad > 5:
-        return redirect('home')
+        return redirect('productos')
 
     if producto.stock_disponible >= cantidad:
         Apartado.objects.create(
@@ -63,7 +65,8 @@ def apartar_producto(request, producto_id):
         producto.stock_disponible -= cantidad
         producto.save()
 
-    return redirect('home')
+    # ir al catálogo de productos después de apartar
+    return redirect('productos')
 
 def landing(request):
     return render(request, 'landing.html')

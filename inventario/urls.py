@@ -6,6 +6,9 @@ urlpatterns = [
 
     path('', views.landing, name='landing'),
 
+    # vista original de productos disponible en /home/ para mantener compatibilidad
+    path('home/', views.home, name='home'),
+
     path('productos/', views.productos, name='productos'),
 
     path('apartar/<int:producto_id>/', views.apartar_producto, name='apartar'),
@@ -16,4 +19,8 @@ urlpatterns = [
 
     path('logout/', views.logout_view, name='logout'),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+# sólo servir media durante desarrollo (DEBUG=True)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

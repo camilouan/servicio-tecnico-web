@@ -16,10 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from inventario import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('inventario.urls')),
-    path('', views.landing, name='landing'),
 ]
+
+# serve media files only when DEBUG is enabled (debug controlled via env vars)
+# in production Render should be configured with an object store or volume
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
