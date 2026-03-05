@@ -135,13 +135,22 @@ Este repositorio está preparado para funcionar en [Render](https://render.com).
 Algunas notas importantes:
 
 - Configure la variable de entorno `DEBUG` a `False`.
-- Render no sirve archivos de media por defecto, **use un bucket o un volumen
-  persistente** para `MEDIA_ROOT` o active el middleware WhiteNoise como
-  se muestra en `wsgi.py` (el proyecto ya lo hace) para servir `/media/`.
-- Asegúrese de que el directorio `media/` se mantenga entre despliegues u
-  utilice un servicio de almacenamiento externo.
-- En Render puede definir otras variables (`SECRET_KEY`, `ALLOWED_HOSTS`,
-  etc.) mediante el panel de configuraciones.
+- El proyecto ahora soporta **Cloudinary** para almacenar los archivos de
+  medios. Dé la URL completa en la variable `CLOUDINARY_URL` o bien configure
+  las tres variables `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` y
+  `CLOUDINARY_API_SECRET`.
+  Render permite agregar estas variables en el panel de "Environment Variables".
+  Cuando se detecta esta configuración, Django usa `django-cloudinary-storage`
+  como `DEFAULT_FILE_STORAGE` y las imágenes subidas desde el admin se
+  guardarán en la nube.
+- Si no usa Cloudinary, Render no sirve archivos de media por defecto, por
+  lo que debe proporcionar un volumen persistente o un bucket y dejar el
+  middleware de WhiteNoise para servir `/media/` (la aplicación crea las
+  carpetas automáticamente al arrancar).
+- Asegúrese de que el directorio `media/` se mantenga entre despliegues si
+  aún depende de él.
+- No olvide definir otras variables (`SECRET_KEY`, `ALLOWED_HOSTS`, etc.)
+  mediante el panel de configuraciones.
 
 
 
