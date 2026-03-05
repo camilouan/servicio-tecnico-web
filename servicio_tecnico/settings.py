@@ -146,10 +146,7 @@ os.makedirs(STATIC_ROOT, exist_ok=True)
 # -----------------------------------------------------------------------------
 if os.environ.get('CLOUDINARY_URL') or os.environ.get('CLOUDINARY_CLOUD_NAME'):
     # delay import until after INSTALLED_APPS defined
-    INSTALLED_APPS += [
-        'cloudinary',
-        'cloudinary_storage',
-    ]
+   
 
     # settings expected by django-cloudinary-storage
     CLOUDINARY_STORAGE = {
