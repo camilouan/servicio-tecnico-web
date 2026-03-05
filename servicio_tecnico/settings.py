@@ -135,6 +135,34 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # ensure the directories exist when the process starts; avoids warnings
 os.makedirs(MEDIA_ROOT, exist_ok=True)
 os.makedirs(STATIC_ROOT, exist_ok=True)
+
+# -----------------------------------------------------------------------------
+# Cloudinary support
+# When deploying to Render we use Cloudinary for media storage.  Provide the
+# URL as an environment variable (Render config var), or define individual
+# CLOUDINARY_CLOUD_NAME/API_KEY/API_SECRET if you prefer.
+# The django-cloudinary-storage package turns any ImageField/FileField into
+# an upload to the cloud.
+# -----------------------------------------------------------------------------
+if os.environ.get('CLOUDINARY_URL') or os.environ.get('CLOUDINARY_CLOUD_NAME'):
+    # delay import until after INSTALLED_APPS defined
+    INSTALLED_APPS += [
+        'cloudinary',
+        'cloudinary_storage',
+    ]
+
+    # settings expected by django-cloudinary-storage
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+        'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+        'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+    }
+
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    # Cloudinary will serve media URLs, so MEDIA_URL can remain '/media/' or a
+    # full URL, but django-cloudinary-storage will override it automatically.
+    MEDIA_URL = '/media/'
+
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
