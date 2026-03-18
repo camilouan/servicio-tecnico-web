@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils import timezone
-from .models import Producto, Apartado
+from .models import Producto, Apartado, Categoria
 from .forms import RegistroForm
 
 
@@ -69,7 +69,8 @@ def apartar_producto(request, producto_id):
     return redirect('productos')
 
 def landing(request):
-    return render(request, 'landing.html')
+    categorias = Categoria.objects.filter(activa=True)
+    return render(request, 'landing.html', {'categorias': categorias})
 
 
 def productos(request):

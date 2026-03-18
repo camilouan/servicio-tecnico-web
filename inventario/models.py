@@ -34,6 +34,8 @@ class Categoria(models.Model):
 
     descripcion = models.TextField()
 
+    imagen = CloudinaryField('imagen', blank=True, null=True)
+
     activa = models.BooleanField(default=True)
 
     def __str__(self):
