@@ -115,61 +115,22 @@ Categorías
 
 <div class="row g-4">
 
+{% for categoria in categorias %}
 <div class="col-md-3">
-
-<div class="card text-center shadow-sm categoria-card">
-
-<div class="card-body">
-
-<h5>📱 Celulares</h5>
-
+    <div class="card shadow-sm categoria-card h-100">
+        {% if categoria.imagen %}
+            <img src="{{ categoria.imagen.url }}" class="card-img-top" alt="{{ categoria.nombre }}">
+        {% else %}
+            <div class="bg-secondary text-white p-5 text-center">Sin imagen</div>
+        {% endif %}
+        <div class="card-body text-center">
+            <h5 class="card-title fw-bold">{{ categoria.nombre }}</h5>
+            <p class="card-text small text-muted">{{ categoria.descripcion }}</p>
+            <a href="/productos" class="btn btn-primary btn-sm">Ver productos</a>
+        </div>
+    </div>
 </div>
-
-</div>
-
-</div>
-
-<div class="col-md-3">
-
-<div class="card text-center shadow-sm categoria-card">
-
-<div class="card-body">
-
-<h5>🎧 Accesorios</h5>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="col-md-3">
-
-<div class="card text-center shadow-sm categoria-card">
-
-<div class="card-body">
-
-<h5>🎮 Consolas</h5>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="col-md-3">
-
-<div class="card text-center shadow-sm categoria-card">
-
-<div class="card-body">
-
-<h5>💻 Computadores</h5>
-
-</div>
-
-</div>
-
-</div>
+{% endfor %}
 
 </div>
 
