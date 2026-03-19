@@ -19,13 +19,13 @@ El sistema controla dinámicamente la disponibilidad de productos evitando sobre
 
 ---
 
-## 🎯 Objetivo General
+## Objetivo General
 
 Desarrollar una aplicación web que permita gestionar inventario y reservas de productos tecnológicos, garantizando control de stock y administración eficiente mediante autenticación de usuarios.
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+##  Tecnologías Utilizadas
 
 - Python 3.10
 - Django 5
@@ -64,12 +64,12 @@ La disponibilidad del producto se calcula dinámicamente según el stock disponi
 - Inicio y cierre de sesión
 - Roles (administrador / cliente)
 
-### 📦 Productos
+###  Productos
 - Creación y edición desde panel administrador
 - Control de stock total y stock disponible
 - Visualización en catálogo público
 
-### 🛒 Reservas
+###  Reservas
 - Límite máximo de 5 unidades por reserva
 - Descuento automático del stock
 - Fecha de expiración automática
@@ -164,11 +164,11 @@ Los productos pueden cargarse desde el panel administrador o mediante el shell d
 
 ##  Estado del Proyecto
 
-✔ Sistema funcional  
-✔ Base de datos estructurada  
-✔ Control de stock dinámico  
-✔ Sistema de reservas operativo  
-✔ Diseño responsive con Bootstrap  
+ Sistema funcional  
+ Base de datos estructurada  
+ Control de stock dinámico  
+ Sistema de reservas operativo  
+  Diseño responsive con Bootstrap  
 
 ---
 
@@ -180,6 +180,6 @@ Universidad Antonio Nariño
 
 ---
 
-## 📄 Licencia
+##  Licencia
 
 Proyecto académico – Uso educativo.
