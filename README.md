@@ -1,10 +1,10 @@
-# 🖥️ Servicio Técnico y Tecnología S.A.
+#  Servicio Técnico y Tecnología S.A.
 
 Aplicación web desarrollada con Django para la gestión de productos tecnológicos y sistema de reservas con control de stock.
 
 ---
 
-## 📌 Descripción del Proyecto
+##  Descripción del Proyecto
 
 Servicio Técnico y Tecnología S.A. es una plataforma web que permite:
 
@@ -19,13 +19,13 @@ El sistema controla dinámicamente la disponibilidad de productos evitando sobre
 
 ---
 
-## 🎯 Objetivo General
+## Objetivo General
 
 Desarrollar una aplicación web que permita gestionar inventario y reservas de productos tecnológicos, garantizando control de stock y administración eficiente mediante autenticación de usuarios.
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+##  Tecnologías Utilizadas
 
 - Python 3.10
 - Django 5
@@ -38,7 +38,7 @@ Desarrollar una aplicación web que permita gestionar inventario y reservas de p
 
 ---
 
-## 🧩 Modelo de Datos
+##  Modelo de Datos
 
 El sistema está compuesto por las siguientes entidades principales:
 
@@ -57,19 +57,19 @@ La disponibilidad del producto se calcula dinámicamente según el stock disponi
 
 ---
 
-## 🔐 Funcionalidades Implementadas
+##  Funcionalidades Implementadas
 
-### 👤 Usuarios
+###  Usuarios
 - Registro de usuarios
 - Inicio y cierre de sesión
 - Roles (administrador / cliente)
 
-### 📦 Productos
+###  Productos
 - Creación y edición desde panel administrador
 - Control de stock total y stock disponible
 - Visualización en catálogo público
 
-### 🛒 Reservas
+###  Reservas
 - Límite máximo de 5 unidades por reserva
 - Descuento automático del stock
 - Fecha de expiración automática
@@ -77,7 +77,7 @@ La disponibilidad del producto se calcula dinámicamente según el stock disponi
 
 ---
 
-## 🚀 Instalación y Ejecución
+##  Instalación y Ejecución
 
 1. Clonar repositorio:
    ```bash
@@ -129,7 +129,7 @@ La disponibilidad del producto se calcula dinámicamente según el stock disponi
    http://127.0.0.1:8000/
    ```
 
-### 👷 Despliegue en Render
+###  Despliegue en Render
 
 Este repositorio está preparado para funcionar en [Render](https://render.com).
 Algunas notas importantes:
@@ -156,23 +156,23 @@ Algunas notas importantes:
 
 ---
 
-## 🧪 Datos de Prueba
+##  Datos de Prueba
 
 Los productos pueden cargarse desde el panel administrador o mediante el shell de Django usando el ORM.
 
 ---
 
-## 📊 Estado del Proyecto
+##  Estado del Proyecto
 
-✔ Sistema funcional  
-✔ Base de datos estructurada  
-✔ Control de stock dinámico  
-✔ Sistema de reservas operativo  
-✔ Diseño responsive con Bootstrap  
+ Sistema funcional  
+ Base de datos estructurada  
+ Control de stock dinámico  
+ Sistema de reservas operativo  
+  Diseño responsive con Bootstrap  
 
 ---
 
-## 👨‍💻 Autor
+##  Autor
 
 Camilo Andrés Parra Cuenca  
 Tecnólogo en Construcción de Software  
@@ -180,6 +180,6 @@ Universidad Antonio Nariño
 
 ---
 
-## 📄 Licencia
+##  Licencia
 
 Proyecto académico – Uso educativo.
