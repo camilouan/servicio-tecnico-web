@@ -55,7 +55,16 @@ class Categoria(models.Model):
                     return url
             except Exception:
                 pass
-        return f"/static/inventario/images/categoria-{slugify(self.nombre)}.svg"
+        return f"inventario/images/categoria-{slugify(self.nombre)}.svg"
+
+    @property
+    def imagen_is_absolute(self):
+        if self.imagen:
+            try:
+                return bool(getattr(self.imagen, 'url', None))
+            except Exception:
+                return False
+        return False
 
     def __str__(self):
         return self.nombre
@@ -119,7 +128,16 @@ class Producto(models.Model):
                     return url
             except Exception:
                 pass
-        return f"/static/inventario/images/producto-{slugify(self.nombre)}.svg"
+        return f"inventario/images/producto-{slugify(self.nombre)}.svg"
+
+    @property
+    def imagen_is_absolute(self):
+        if self.imagen:
+            try:
+                return bool(getattr(self.imagen, 'url', None))
+            except Exception:
+                return False
+        return False
 
     def __str__(self):
         return self.nombre
