@@ -25,6 +25,14 @@ body {
   background: linear-gradient(90deg, #0f2b60 0%, #184298 100%);
   box-shadow: var(--shadow);
 }
+.navbar-brand-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #fff;
+  padding: 6px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
 .navbar .nav-link {
   color: rgba(255, 255, 255, 0.88);
 }
