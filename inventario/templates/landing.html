@@ -50,11 +50,7 @@
             {% for categoria in categorias %}
             <div class="col-md-4">
                 <div class="card category-card overflow-hidden h-100">
-                    {% if categoria.imagen %}
-                    <img src="{{ categoria.imagen.url }}" alt="{{ categoria.nombre }}" class="img-fluid w-100">
-                    {% else %}
-                    <div class="bg-light d-flex align-items-center justify-content-center" style="min-height: 220px;">Sin imagen</div>
-                    {% endif %}
+                    <img src="{{ categoria.imagen_url }}" alt="{{ categoria.nombre }}" class="img-fluid w-100">
                     <div class="card-body">
                         <h5 class="fw-bold">{{ categoria.nombre }}</h5>
                         <p class="text-muted">{{ categoria.descripcion }}</p>

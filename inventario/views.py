@@ -5,9 +5,11 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.utils import timezone
 from .models import Producto, Apartado, Categoria
 from .forms import RegistroForm
+from .initial_data import ensure_initial_data
 
 
 def home(request):
+    ensure_initial_data()
     productos = Producto.objects.all()
     return render(request, 'home.html', {'productos': productos})
 
@@ -69,10 +71,12 @@ def apartar_producto(request, producto_id):
     return redirect('productos')
 
 def landing(request):
+    ensure_initial_data()
     categorias = Categoria.objects.filter(activa=True)
     return render(request, 'landing.html', {'categorias': categorias})
 
 
 def productos(request):
+    ensure_initial_data()
     productos = Producto.objects.all()
     return render(request, 'productos.html', {'productos': productos})

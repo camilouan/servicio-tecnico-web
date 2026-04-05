@@ -24,11 +24,7 @@
             {% for producto in productos %}
             <div class="col-lg-4 col-md-6">
                 <div class="card product-card h-100">
-                    {% if producto.imagen %}
-                    <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="img-fluid w-100">
-                    {% else %}
-                    <img src="https://via.placeholder.com/500x300?text=Sin+imagen" alt="{{ producto.nombre }}" class="img-fluid w-100">
-                    {% endif %}
+                    <img src="{{ producto.imagen_url }}" alt="{{ producto.nombre }}" class="img-fluid w-100">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <h5 class="fw-bold mb-0">{{ producto.nombre }}</h5>
