@@ -50,26 +50,57 @@ main {
 }
 
 .admin-entry {
-  background: rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg, rgba(15, 43, 96, 0.98), rgba(7, 18, 43, 0.95));
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-entry-info {
+  color: #e2e8f0;
+}
+
+.admin-entry-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #7dd3fc;
+}
+
+.admin-entry-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-entry-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.admin-entry-subtitle {
+  font-size: 0.82rem;
+  color: rgba(226, 232, 240, 0.75);
 }
 
 .admin-entry-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.35rem 0.9rem;
+  padding: 0.5rem 1rem;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: rgba(255, 255, 255, 0.85);
-  background: rgba(255, 255, 255, 0.08);
-  font-size: 0.85rem;
+  border: 1px solid rgba(125, 211, 252, 0.35);
+  color: #ffffff;
+  background: rgba(59, 130, 246, 0.18);
+  font-size: 0.9rem;
   text-decoration: none;
   transition: all 0.25s ease;
 }
 
 .admin-entry-button:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(96, 165, 250, 0.28);
   color: #ffffff;
   transform: translateY(-1px);
 }
