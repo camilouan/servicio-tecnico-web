@@ -24,7 +24,8 @@ urlpatterns = [
     path('', include('inventario.urls')),
 ]
 
-# serve media files only when DEBUG is enabled (debug controlled via env vars)
+# serve static and media files only when DEBUG is enabled (debug controlled via env vars)
 # in production Render should be configured with an object store or volume
 if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
