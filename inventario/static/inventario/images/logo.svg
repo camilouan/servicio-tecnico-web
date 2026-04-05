@@ -1,16 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="logoTitle logoDesc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" role="img" aria-labelledby="logoTitle logoDesc">
   <title id="logoTitle">Servicio Técnico y Tecnología S.A. Logo</title>
-  <desc id="logoDesc">Icono representando dispositivo y mouse para el logo de la empresa.</desc>
+  <desc id="logoDesc">Logo de Servicio Técnico con icono de dispositivo y nombre de la empresa.</desc>
   <defs>
     <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#dbe5ff"/>
+      <stop offset="0%" stop-color="#1c57d0"/>
+      <stop offset="100%" stop-color="#3163ff"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0d2757"/>
+      <stop offset="100%" stop-color="#113c9c"/>
     </linearGradient>
   </defs>
-  <rect x="2" y="2" width="60" height="60" rx="14" fill="#1b56d0"/>
-  <path d="M18 18h28a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4Z" fill="#fff"/>
-  <path d="M22 24h18v4H22zM22 32h14v4H22z" fill="#1b56d0"/>
-  <path d="M32 42c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4 4 1.8 4 4Z" fill="#1b56d0"/>
-  <path d="M34 16h6v14h-6z" fill="#fff" opacity="0.75"/>
-  <path d="M36 36h8v10h-8z" fill="#fff" opacity="0.75"/>
+  <rect x="0" y="0" width="64" height="64" rx="16" fill="url(#logoGrad)"/>
+  <path d="M16 16h32a6 6 0 0 1 6 6v20a6 6 0 0 1-6 6H16a6 6 0 0 1-6-6V22a6 6 0 0 1 6-6Z" fill="#fff"/>
+  <path d="M24 24h24v4H24zM24 32h18v4H24z" fill="#1c57d0"/>
+  <path d="M34 44c0 2-1.6 3.6-3.6 3.6S27 46 27 44s1.6-3.6 3.6-3.6 3.4 1.6 3.4 3.6Z" fill="#1c57d0"/>
+  <path d="M42 14h10v10H42z" fill="#fff" opacity="0.8"/>
+  <path d="M42 30h10v16H42z" fill="#fff" opacity="0.8"/>
+  <text x="76" y="28" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="700" fill="url(#textGrad)">Servicio Técnico</text>
+  <text x="76" y="48" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#0d2757">y Tecnología, S.A.</text>
 </svg>
