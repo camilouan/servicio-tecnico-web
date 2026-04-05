@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from django.utils.text import slugify
 from cloudinary.models import CloudinaryField
 
 
@@ -39,17 +40,17 @@ class Categoria(models.Model):
     activa = models.BooleanField(default=True)
 
     FALLBACK_IMAGES = {
-        "Celulares": "https://picsum.photos/seed/celulares/1200/800",
-        "Accesorios": "https://picsum.photos/seed/accesorios/1200/800",
-        "Consolas": "https://picsum.photos/seed/consolas/1200/800",
-        "Computadores": "https://picsum.photos/seed/computadores/1200/800",
+        "Celulares": "https://commons.wikimedia.org/wiki/Special:FilePath/Mobile_Phone_Evolution_1992_-_2014.jpg",
+        "Accesorios": "https://commons.wikimedia.org/wiki/Special:FilePath/SanDisk-Cruzer-USB-4GB-ThumbDrive.jpg",
+        "Consolas": "https://commons.wikimedia.org/wiki/Special:FilePath/Gaming_Section_1_-_Retrosystems_2010.jpg",
+        "Computadores": "https://commons.wikimedia.org/wiki/Special:FilePath/Laptop_collage.jpg",
     }
 
     @property
     def imagen_url(self):
         if self.imagen and getattr(self.imagen, 'url', None):
             return self.imagen.url
-        return self.FALLBACK_IMAGES.get(self.nombre, "https://picsum.photos/seed/default/1200/800")
+        return f"/static/inventario/images/categoria-{slugify(self.nombre)}.svg"
 
     def __str__(self):
         return self.nombre
@@ -82,33 +83,33 @@ class Producto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
 
     FALLBACK_IMAGES = {
-        "iPhone 14": "https://picsum.photos/seed/iphone14/1200/800",
-        "Samsung Galaxy S23": "https://picsum.photos/seed/samsung-s23/1200/800",
-        "Xiaomi Redmi Note 12": "https://picsum.photos/seed/xiaomi-redmi/1200/800",
-        "Motorola Edge 40": "https://picsum.photos/seed/motorola-edge/1200/800",
-        "Audífonos Bluetooth": "https://picsum.photos/seed/audifonos-bluetooth/1200/800",
-        "Teclado Mecanico RGB": "https://picsum.photos/seed/teclado-rgb/1200/800",
-        "Mouse Gamer": "https://picsum.photos/seed/mouse-gamer/1200/800",
-        "Cargador Rapido": "https://picsum.photos/seed/cargador-rapido/1200/800",
-        "PlayStation 5": "https://picsum.photos/seed/ps5/1200/800",
-        "Xbox Series X": "https://picsum.photos/seed/xbox-series-x/1200/800",
-        "Nintendo Switch": "https://picsum.photos/seed/nintendo-switch/1200/800",
-        "Laptop HP": "https://picsum.photos/seed/hp-laptop/1200/800",
-        "MacBook Air": "https://picsum.photos/seed/macbook-air/1200/800",
-        "Asus ROG": "https://picsum.photos/seed/asus-rog/1200/800",
-        "Monitor Gamer": "https://picsum.photos/seed/monitor-gamer/1200/800",
-        "Tablet Samsung": "https://picsum.photos/seed/tablet-samsung/1200/800",
-        "Smartwatch": "https://picsum.photos/seed/smartwatch/1200/800",
-        "Parlante JBL": "https://picsum.photos/seed/parlante-jbl/1200/800",
-        "Camara Web": "https://picsum.photos/seed/camara-web/1200/800",
-        "Control PS5": "https://picsum.photos/seed/control-ps5/1200/800",
+        "iPhone 14": "https://commons.wikimedia.org/wiki/Special:FilePath/IPhone_14_vector.svg",
+        "Samsung Galaxy S23": "https://commons.wikimedia.org/wiki/Special:FilePath/Galaxy_S23.png",
+        "Xiaomi Redmi Note 12": "https://commons.wikimedia.org/wiki/Special:FilePath/Redmi_Note_12_front.jpg",
+        "Motorola Edge 40": "https://commons.wikimedia.org/wiki/Special:FilePath/Motorola_Edge.png",
+        "Audífonos Bluetooth": "https://commons.wikimedia.org/wiki/Special:FilePath/Plantronics_headset.jpg",
+        "Teclado Mecanico RGB": "https://commons.wikimedia.org/wiki/Special:FilePath/Keyboard_Construction.JPG",
+        "Mouse Gamer": "https://commons.wikimedia.org/wiki/Special:FilePath/3-Tasten-Maus_Microsoft.jpg",
+        "Cargador Rapido": "https://commons.wikimedia.org/wiki/Special:FilePath/Notebook-Computer-AC-Adapter.jpg",
+        "PlayStation 5": "https://commons.wikimedia.org/wiki/Special:FilePath/Black_and_white_Playstation_5_base_edition_with_controller.png",
+        "Xbox Series X": "https://commons.wikimedia.org/wiki/Special:FilePath/Xbox_Series_X_S_color.svg",
+        "Nintendo Switch": "https://commons.wikimedia.org/wiki/Special:FilePath/Nintendo_Switch_2_in_Handheld_Mode.jpg",
+        "Laptop HP": "https://commons.wikimedia.org/wiki/Special:FilePath/Laptop_collage.jpg",
+        "MacBook Air": "https://commons.wikimedia.org/wiki/Special:FilePath/Macbook_Air_15_inch_-_2_(blurred).jpg",
+        "Asus ROG": "https://commons.wikimedia.org/wiki/Special:FilePath/ROG_ALLY_-_11.jpg",
+        "Monitor Gamer": "https://commons.wikimedia.org/wiki/Special:FilePath/MonitorLCDlcd.svg",
+        "Tablet Samsung": "https://commons.wikimedia.org/wiki/Special:FilePath/IPad_Mini_6_-_1.jpg",
+        "Smartwatch": "https://commons.wikimedia.org/wiki/Special:FilePath/Samsung_Galaxy_Watch.jpg",
+        "Parlante JBL": "https://commons.wikimedia.org/wiki/Special:FilePath/JBL_Paragon_(edited_and_cropped).jpg",
+        "Camara Web": "https://commons.wikimedia.org/wiki/Special:FilePath/Logicool_StreamCam_(cropped).jpg",
+        "Control PS5": "https://commons.wikimedia.org/wiki/Special:FilePath/PS4-Console-wDS4.jpg",
     }
 
     @property
     def imagen_url(self):
         if self.imagen and getattr(self.imagen, 'url', None):
             return self.imagen.url
-        return self.FALLBACK_IMAGES.get(self.nombre, "https://picsum.photos/seed/default/1200/800")
+        return f"/static/inventario/images/producto-{slugify(self.nombre)}.svg"
 
     def __str__(self):
         return self.nombre
