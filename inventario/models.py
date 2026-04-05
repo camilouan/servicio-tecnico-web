@@ -143,6 +143,39 @@ class Producto(models.Model):
         return self.nombre
 
 
+class HeroBanner(models.Model):
+    titulo = models.CharField(
+        max_length=255,
+        default='Encuentra accesorios y dispositivos con la mejor experiencia de compra'
+    )
+    subtitulo = models.TextField(
+        default='Accesorios gamer, celulares, consolas y computadores listos para apartar con atención presencial y soporte profesional.'
+    )
+    imagen_fondo = CloudinaryField('imagen de fondo', blank=True, null=True)
+    activo = models.BooleanField(default=True)
+    orden = models.PositiveIntegerField(default=0)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Banner de Hero'
+        verbose_name_plural = 'Banners de Hero'
+        ordering = ['-orden', '-fecha_actualizacion']
+
+    @property
+    def fondo_url(self):
+        if self.imagen_fondo:
+            try:
+                url = getattr(self.imagen_fondo, 'url', None)
+                if url:
+                    return url
+            except Exception:
+                pass
+        return None
+
+    def __str__(self):
+        return f'Banner Hero {self.titulo[:40]}'
+
+
 class Apartado(models.Model):
 
     ESTADOS = (

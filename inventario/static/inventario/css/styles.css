@@ -55,7 +55,9 @@ main {
 
 .hero {
   position: relative;
-  background: linear-gradient(135deg, #0d6efd 0%, #2764ff 100%);
+  background: linear-gradient(180deg, rgba(7, 18, 43, 0.74), rgba(7, 18, 43, 0.74)), url('/static/inventario/images/hero-default.jpg');
+  background-size: cover;
+  background-position: center;
   color: #fff;
   padding: 100px 0 80px;
   overflow: hidden;
@@ -64,9 +66,20 @@ main {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.14), transparent 35%),
-              radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.12), transparent 28%);
+  background: linear-gradient(180deg, rgba(7, 18, 43, 0.4), rgba(7, 18, 43, 0.8));
   pointer-events: none;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+.hero .container {
+  position: relative;
+  z-index: 1;
 }
 .hero .lead {
   color: rgba(255, 255, 255, 0.88);
@@ -79,8 +92,13 @@ main {
   border-radius: 1.75rem;
   padding: 1.75rem;
   background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.16);
+}
+.hero .badge {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .section-title {

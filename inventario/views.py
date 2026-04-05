@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils import timezone
-from .models import Producto, Apartado, Categoria
+from .models import Producto, Apartado, Categoria, HeroBanner
 from .forms import RegistroForm
 from .initial_data import ensure_initial_data
 
@@ -73,7 +73,8 @@ def apartar_producto(request, producto_id):
 def landing(request):
     ensure_initial_data()
     categorias = Categoria.objects.filter(activa=True)
-    return render(request, 'landing.html', {'categorias': categorias})
+    hero = HeroBanner.objects.filter(activo=True).order_by('-orden', '-fecha_actualizacion').first()
+    return render(request, 'landing.html', {'categorias': categorias, 'hero': hero})
 
 
 def productos(request):
