@@ -39,17 +39,17 @@ class Categoria(models.Model):
     activa = models.BooleanField(default=True)
 
     FALLBACK_IMAGES = {
-        "Celulares": "https://images.unsplash.com/photo-1510552776732-01acc74b7350?auto=format&fit=crop&w=1200&q=80",
-        "Accesorios": "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=1200&q=80",
-        "Consolas": "https://images.unsplash.com/photo-1606813909194-3f0b193af0c2?auto=format&fit=crop&w=1200&q=80",
-        "Computadores": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80",
+        "Celulares": "https://picsum.photos/seed/celulares/1200/800",
+        "Accesorios": "https://picsum.photos/seed/accesorios/1200/800",
+        "Consolas": "https://picsum.photos/seed/consolas/1200/800",
+        "Computadores": "https://picsum.photos/seed/computadores/1200/800",
     }
 
     @property
     def imagen_url(self):
         if self.imagen and getattr(self.imagen, 'url', None):
             return self.imagen.url
-        return self.FALLBACK_IMAGES.get(self.nombre, "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80")
+        return self.FALLBACK_IMAGES.get(self.nombre, "https://picsum.photos/seed/default/1200/800")
 
     def __str__(self):
         return self.nombre
@@ -82,33 +82,33 @@ class Producto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
 
     FALLBACK_IMAGES = {
-        "iPhone 14": "https://images.unsplash.com/photo-1510552776732-01acc74b7350?auto=format&fit=crop&w=1200&q=80",
-        "Samsung Galaxy S23": "https://images.unsplash.com/photo-1512499617640-c2f9998c26f9?auto=format&fit=crop&w=1200&q=80",
-        "Xiaomi Redmi Note 12": "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=80",
-        "Motorola Edge 40": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1200&q=80",
-        "Audífonos Bluetooth": "https://images.unsplash.com/photo-1516707570269-4d3b3933c8f6?auto=format&fit=crop&w=1200&q=80",
-        "Teclado Mecanico RGB": "https://images.unsplash.com/photo-1504274066651-8d31a536b11a?auto=format&fit=crop&w=1200&q=80",
-        "Mouse Gamer": "https://images.unsplash.com/photo-1518665753279-8d16d4c0e9af?auto=format&fit=crop&w=1200&q=80",
-        "Cargador Rapido": "https://images.unsplash.com/photo-1518732714860-b62714ce0c0e?auto=format&fit=crop&w=1200&q=80",
-        "PlayStation 5": "https://images.unsplash.com/photo-1606813909194-3f0b193af0c2?auto=format&fit=crop&w=1200&q=80",
-        "Xbox Series X": "https://images.unsplash.com/photo-1606813909194-3f0b193af0c2?auto=format&fit=crop&w=1200&q=80",
-        "Nintendo Switch": "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=1200&q=80",
-        "Laptop HP": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80",
-        "MacBook Air": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
-        "Asus ROG": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80",
-        "Monitor Gamer": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80",
-        "Tablet Samsung": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80",
-        "Smartwatch": "https://images.unsplash.com/photo-1516707570269-4d3b3933c8f6?auto=format&fit=crop&w=1200&q=80",
-        "Parlante JBL": "https://images.unsplash.com/photo-1512427691650-d4b5f2b3b2f4?auto=format&fit=crop&w=1200&q=80",
-        "Camara Web": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
-        "Control PS5": "https://images.unsplash.com/photo-1521391407369-212d7ec35b5d?auto=format&fit=crop&w=1200&q=80",
+        "iPhone 14": "https://picsum.photos/seed/iphone14/1200/800",
+        "Samsung Galaxy S23": "https://picsum.photos/seed/samsung-s23/1200/800",
+        "Xiaomi Redmi Note 12": "https://picsum.photos/seed/xiaomi-redmi/1200/800",
+        "Motorola Edge 40": "https://picsum.photos/seed/motorola-edge/1200/800",
+        "Audífonos Bluetooth": "https://picsum.photos/seed/audifonos-bluetooth/1200/800",
+        "Teclado Mecanico RGB": "https://picsum.photos/seed/teclado-rgb/1200/800",
+        "Mouse Gamer": "https://picsum.photos/seed/mouse-gamer/1200/800",
+        "Cargador Rapido": "https://picsum.photos/seed/cargador-rapido/1200/800",
+        "PlayStation 5": "https://picsum.photos/seed/ps5/1200/800",
+        "Xbox Series X": "https://picsum.photos/seed/xbox-series-x/1200/800",
+        "Nintendo Switch": "https://picsum.photos/seed/nintendo-switch/1200/800",
+        "Laptop HP": "https://picsum.photos/seed/hp-laptop/1200/800",
+        "MacBook Air": "https://picsum.photos/seed/macbook-air/1200/800",
+        "Asus ROG": "https://picsum.photos/seed/asus-rog/1200/800",
+        "Monitor Gamer": "https://picsum.photos/seed/monitor-gamer/1200/800",
+        "Tablet Samsung": "https://picsum.photos/seed/tablet-samsung/1200/800",
+        "Smartwatch": "https://picsum.photos/seed/smartwatch/1200/800",
+        "Parlante JBL": "https://picsum.photos/seed/parlante-jbl/1200/800",
+        "Camara Web": "https://picsum.photos/seed/camara-web/1200/800",
+        "Control PS5": "https://picsum.photos/seed/control-ps5/1200/800",
     }
 
     @property
     def imagen_url(self):
         if self.imagen and getattr(self.imagen, 'url', None):
             return self.imagen.url
-        return self.FALLBACK_IMAGES.get(self.nombre, "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80")
+        return self.FALLBACK_IMAGES.get(self.nombre, "https://picsum.photos/seed/default/1200/800")
 
     def __str__(self):
         return self.nombre
