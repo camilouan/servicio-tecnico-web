@@ -1,18 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" role="img" aria-labelledby="logoTitle logoDesc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="logoTitle logoDesc">
   <title id="logoTitle">Servicio Técnico y Tecnología S.A. Logo</title>
-  <desc id="logoDesc">Logo con icono de dispositivo y mouse junto al nombre de la empresa.</desc>
+  <desc id="logoDesc">Icono representando dispositivo y mouse para el logo de la empresa.</desc>
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1646d3"/>
-      <stop offset="100%" stop-color="#2f65ff"/>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#dbe5ff"/>
     </linearGradient>
   </defs>
-  <rect x="0" y="0" width="120" height="120" rx="24" fill="url(#grad)"/>
-  <path d="M39 28h42a8 8 0 0 1 8 8v48a8 8 0 0 1-8 8H39a8 8 0 0 1-8-8V36a8 8 0 0 1 8-8Z" fill="#fff"/>
-  <path d="M88 32H60a4 4 0 0 0-4 4v48a4 4 0 0 0 4 4h28a4 4 0 0 0 4-4V36a4 4 0 0 0-4-4Zm-2 20H62v-8h24v8Zm0 14H62v-8h24v8Z" fill="#1646d3" opacity="0.9"/>
-  <path d="M74 88c0 3.3-2.7 6-6 6s-6-2.7-6-6 2.7-6 6-6 6 2.7 6 6Z" fill="#1646d3"/>
-  <path d="M52 68h16v4H52z" fill="#1646d3"/>
-  <path d="M102 26c1.1 0 2 .9 2 2v64c0 1.1-.9 2-2 2h-8c-1.1 0-2-.9-2-2V48H80c-1.1 0-2-.9-2-2V28c0-1.1.9-2 2-2h22Z" fill="#fff"/>
-  <path d="M92 36h6v14h-6zM92 56h6v18h-6z" fill="#1646d3"/>
-  <path d="M132 20h178v80H132z" fill="none"/>
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#1b56d0"/>
+  <path d="M18 18h28a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4Z" fill="#fff"/>
+  <path d="M22 24h18v4H22zM22 32h14v4H22z" fill="#1b56d0"/>
+  <path d="M32 42c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4 4 1.8 4 4Z" fill="#1b56d0"/>
+  <path d="M34 16h6v14h-6z" fill="#fff" opacity="0.75"/>
+  <path d="M36 36h8v10h-8z" fill="#fff" opacity="0.75"/>
 </svg>
