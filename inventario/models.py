@@ -48,8 +48,13 @@ class Categoria(models.Model):
 
     @property
     def imagen_url(self):
-        if self.imagen and getattr(self.imagen, 'url', None):
-            return self.imagen.url
+        if self.imagen:
+            try:
+                url = getattr(self.imagen, 'url', None)
+                if url:
+                    return url
+            except Exception:
+                pass
         return f"/static/inventario/images/categoria-{slugify(self.nombre)}.svg"
 
     def __str__(self):
@@ -107,8 +112,13 @@ class Producto(models.Model):
 
     @property
     def imagen_url(self):
-        if self.imagen and getattr(self.imagen, 'url', None):
-            return self.imagen.url
+        if self.imagen:
+            try:
+                url = getattr(self.imagen, 'url', None)
+                if url:
+                    return url
+            except Exception:
+                pass
         return f"/static/inventario/images/producto-{slugify(self.nombre)}.svg"
 
     def __str__(self):
