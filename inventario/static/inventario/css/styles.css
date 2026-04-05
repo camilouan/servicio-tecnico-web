@@ -1,0 +1,198 @@
+:root {
+  --brand: #0d6efd;
+  --brand-dark: #122b6d;
+  --surface: #ffffff;
+  --surface-soft: #f4f8ff;
+  --text-muted: #6c757d;
+  --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: linear-gradient(180deg, #eef4ff 0%, #f9fbff 100%);
+  color: #1f2937;
+}
+
+.bg-soft {
+  background: linear-gradient(180deg, #f3f7ff 0%, #eef4ff 100%);
+}
+
+.navbar-glow {
+  background: linear-gradient(90deg, #0f2b60 0%, #184298 100%);
+  box-shadow: var(--shadow);
+}
+.navbar .nav-link {
+  color: rgba(255, 255, 255, 0.88);
+}
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+  color: #ffffff;
+}
+
+.hero {
+  position: relative;
+  background: linear-gradient(135deg, #0d6efd 0%, #2764ff 100%);
+  color: #fff;
+  padding: 100px 0 80px;
+  overflow: hidden;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.14), transparent 35%),
+              radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.12), transparent 28%);
+  pointer-events: none;
+}
+.hero .lead {
+  color: rgba(255, 255, 255, 0.88);
+}
+.hero h1 {
+  font-size: clamp(2.8rem, 4vw, 4.5rem);
+  line-height: 1.05;
+}
+.hero .hero-card {
+  border-radius: 1.75rem;
+  padding: 1.75rem;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.section-title {
+  position: relative;
+  display: inline-block;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+}
+.section-title::after {
+  content: "";
+  width: 3rem;
+  height: 4px;
+  background: var(--brand);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -0.75rem;
+}
+
+.card-glow {
+  border: 0;
+  border-radius: 1.5rem;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card-glow:hover {
+  transform: translateY(-6px);
+}
+
+.category-card,
+.feature-box,
+.testimonial-card,
+.product-card,
+.form-panel {
+  border-radius: 1.75rem;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+}
+
+.category-card img,
+.product-card img {
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  object-fit: cover;
+  height: 220px;
+}
+
+.btn-brand {
+  background: var(--brand);
+  border: none;
+}
+.btn-brand:hover {
+  background: #084bb1;
+}
+
+.feature-box {
+  padding: 2rem;
+  min-height: 100%;
+}
+.feature-box .feature-icon {
+  font-size: 2.5rem;
+  color: var(--brand);
+  margin-bottom: 1rem;
+}
+
+.testimonial-card {
+  padding: 2rem;
+  min-height: 100%;
+}
+.testimonial-card .star-group {
+  color: #f5b301;
+  margin-bottom: 1rem;
+}
+
+.footer {
+  background: #091a42;
+  color: #d7e3ff;
+}
+.footer a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  margin-left: 1rem;
+}
+.footer a:hover {
+  color: #ffffff;
+}
+
+.form-panel {
+  padding: 2rem;
+}
+
+.form-panel input,
+.form-panel select,
+.form-panel textarea {
+  border-radius: 1rem;
+  border: 1px solid rgba(13, 110, 253, 0.18);
+  background: #f7fbff;
+  padding: 1rem 1.1rem;
+}
+
+.form-panel .form-label {
+  font-weight: 600;
+}
+
+.form-panel .btn {
+  border-radius: 1rem;
+  padding: 0.95rem 1.5rem;
+}
+
+.badge-stock {
+  border-radius: 1.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+}
+
+.product-card .price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+.product-card .stock,
+.text-muted {
+  color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 60px 0 50px;
+  }
+  .section-title::after {
+    left: 45%;
+  }
+}
