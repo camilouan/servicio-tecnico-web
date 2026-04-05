@@ -52,6 +52,10 @@ def upload_remote_image(source_url, public_id):
 
 
 def ensure_initial_data():
+    # Evita repetir la inicialización en cada petición y reduce la latencia.
+    if Categoria.objects.exists() and Producto.objects.exists():
+        return
+
     categorias = [
         "Celulares",
         "Accesorios",
