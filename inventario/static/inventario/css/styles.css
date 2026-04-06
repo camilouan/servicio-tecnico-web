@@ -718,6 +718,39 @@ main {
   transform: translateX(5px);
 }
 
+/* Resumen de límites de apartados */
+.limit-card {
+  background: linear-gradient(135deg, #ffffff 0%, #eef6ff 100%);
+  border: 1px solid rgba(59, 130, 246, 0.12);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  height: 100%;
+}
+
+.limit-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #2563eb;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+}
+
+.limit-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 0.4rem;
+}
+
+.limit-card p {
+  color: #475569;
+  line-height: 1.6;
+  font-size: 0.94rem;
+}
+
 /* Perfil de usuario */
 .profile-card {
   background: #ffffff;

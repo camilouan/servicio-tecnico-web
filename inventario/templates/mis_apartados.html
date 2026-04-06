@@ -13,6 +13,30 @@
             </div>
         </div>
 
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="limit-card">
+                    <span class="limit-label">Tipos de productos activos</span>
+                    <div class="limit-value">{{ productos_distintos_activos }}/{{ max_productos_distintos }}</div>
+                    <p class="mb-0">Puedes tener máximo {{ max_productos_distintos }} productos diferentes activos al mismo tiempo.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="limit-card">
+                    <span class="limit-label">Límite por producto</span>
+                    <div class="limit-value">{{ max_unidades_por_producto }}</div>
+                    <p class="mb-0">Solo puedes apartar hasta {{ max_unidades_por_producto }} unidades activas del mismo producto.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="limit-card">
+                    <span class="limit-label">Unidades activas</span>
+                    <div class="limit-value">{{ total_unidades_activas }}</div>
+                    <p class="mb-0">Este valor incluye tus apartados pendientes y confirmados actualmente.</p>
+                </div>
+            </div>
+        </div>
+
         {% if apartados %}
         <div class="table-responsive shadow-sm rounded-4 overflow-hidden">
             <table class="table align-middle mb-0">

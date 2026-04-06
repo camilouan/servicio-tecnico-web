@@ -56,9 +56,41 @@ def logout_view(request):
 def apartar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
 
-    cantidad = int(request.POST.get('cantidad', 1))
+    try:
+        cantidad = int(request.POST.get('cantidad', 1))
+    except (TypeError, ValueError):
+        messages.error(request, 'La cantidad ingresada no es válida.')
+        return redirect('productos')
+
+    if cantidad < 1:
+        messages.error(request, 'Debes apartar al menos una unidad.')
+        return redirect('productos')
 
     if cantidad > 5:
+        messages.error(request, 'Solo puedes solicitar hasta 5 unidades por intento.')
+        return redirect('productos')
+
+    estados_activos = ['pendiente', 'confirmado']
+    apartados_activos_usuario = Apartado.objects.filter(
+        usuario=request.user,
+        estado__in=estados_activos,
+    ).exclude(fecha_expiracion__lt=timezone.now(), estado='pendiente')
+
+    productos_distintos_activos = set(apartados_activos_usuario.values_list('producto_id', flat=True))
+    if producto.id not in productos_distintos_activos and len(productos_distintos_activos) >= 3:
+        messages.warning(request, 'Solo puedes tener 3 tipos diferentes de productos activos al mismo tiempo. Espera a que uno se entregue, cancele o expire para apartar otro distinto.')
+        return redirect('productos')
+
+    cantidad_ya_apartada = apartados_activos_usuario.filter(producto=producto).values_list('cantidad', flat=True)
+    total_apartado = sum(cantidad_ya_apartada)
+
+    if total_apartado >= 5:
+        messages.warning(request, 'Ya tienes el máximo permitido de 5 unidades activas para este producto.')
+        return redirect('productos')
+
+    if total_apartado + cantidad > 5:
+        disponibles_para_ti = 5 - total_apartado
+        messages.warning(request, f'Solo puedes apartar {disponibles_para_ti} unidad(es) más de este producto hasta que tus apartados se entreguen, cancelen o expiren.')
         return redirect('productos')
 
     if producto.stock_disponible >= cantidad:
@@ -71,8 +103,10 @@ def apartar_producto(request, producto_id):
 
         producto.stock_disponible -= cantidad
         producto.save()
+        messages.success(request, f'Se apartaron correctamente {cantidad} unidad(es) de {producto.nombre}.')
+    else:
+        messages.error(request, 'No hay suficiente stock disponible para completar el apartado.')
 
-    # ir al catálogo de productos después de apartar
     return redirect('productos')
 
 def landing(request):
@@ -140,7 +174,23 @@ def productos(request):
 @login_required
 def mis_apartados(request):
     apartados = Apartado.objects.filter(usuario=request.user).select_related('producto').order_by('-fecha_apartado')
-    return render(request, 'mis_apartados.html', {'apartados': apartados})
+
+    estados_activos = ['pendiente', 'confirmado']
+    apartados_activos = apartados.filter(estado__in=estados_activos)
+    productos_distintos_activos = len(set(apartados_activos.values_list('producto_id', flat=True)))
+    total_unidades_activas = sum(apartados_activos.values_list('cantidad', flat=True))
+
+    return render(
+        request,
+        'mis_apartados.html',
+        {
+            'apartados': apartados,
+            'productos_distintos_activos': productos_distintos_activos,
+            'total_unidades_activas': total_unidades_activas,
+            'max_productos_distintos': 3,
+            'max_unidades_por_producto': 5,
+        },
+    )
 
 
 @login_required
