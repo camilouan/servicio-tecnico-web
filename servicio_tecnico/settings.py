@@ -36,7 +36,7 @@ JAZZMIN_SETTINGS = {
     'site_header': 'Servicio Técnico',
     'site_brand': 'Panel Administrativo',
     'site_logo': 'img/logo.png',
-    'login_logo': 'img/logo.png',
+    'login_logo': None,
     'site_icon': 'img/logo.png',
     'welcome_sign': 'Bienvenido al panel administrativo de Servicio Técnico',
     'copyright': 'Servicio Técnico',
