@@ -59,7 +59,7 @@
                     <div class="card-body">
                         <h5 class="fw-bold">{{ categoria.nombre }}</h5>
                         <p class="text-muted">{{ categoria.descripcion }}</p>
-                        <a href="/productos" class="btn btn-brand btn-sm">Ver productos</a>
+                        <a href="{% url 'productos' %}?categoria={{ categoria.nombre|urlencode }}" class="btn btn-brand btn-sm">Ver productos</a>
                     </div>
                 </div>
             </div>
