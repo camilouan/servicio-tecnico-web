@@ -29,6 +29,8 @@ class Usuario(AbstractUser):
     ultima_actualizacion_password = models.DateTimeField(blank=True, null=True)
 
     activo = models.BooleanField(default=True)
+    acepta_politicas = models.BooleanField(default=False)
+    fecha_aceptacion_politicas = models.DateTimeField(blank=True, null=True)
 
     @property
     def foto_perfil_url(self):

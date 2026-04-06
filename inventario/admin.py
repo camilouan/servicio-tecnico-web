@@ -77,11 +77,11 @@ class HeroBannerAdmin(admin.ModelAdmin):
 
 @admin.register(Usuario)
 class UsuarioAdmin(UserAdmin):
-    list_display = ('username', 'email', 'nombres', 'apellidos', 'rol', 'activo', 'is_staff')
-    list_filter = ('rol', 'activo', 'is_staff', 'is_superuser')
+    list_display = ('username', 'email', 'nombres', 'apellidos', 'rol', 'activo', 'acepta_politicas', 'is_staff')
+    list_filter = ('rol', 'activo', 'acepta_politicas', 'is_staff', 'is_superuser')
     search_fields = ('username', 'email', 'nombres', 'apellidos', 'documento_identidad')
     ordering = ('username',)
-    readonly_fields = ('fecha_registro', 'ultima_actualizacion_password')
+    readonly_fields = ('fecha_registro', 'ultima_actualizacion_password', 'fecha_aceptacion_politicas')
 
     fieldsets = UserAdmin.fieldsets + (
         (
@@ -97,6 +97,8 @@ class UsuarioAdmin(UserAdmin):
                     'foto_perfil',
                     'rol',
                     'activo',
+                    'acepta_politicas',
+                    'fecha_aceptacion_politicas',
                     'fecha_registro',
                     'ultima_actualizacion_password',
                 )
@@ -118,6 +120,7 @@ class UsuarioAdmin(UserAdmin):
                     'ciudad',
                     'rol',
                     'activo',
+                    'acepta_politicas',
                 )
             },
         ),

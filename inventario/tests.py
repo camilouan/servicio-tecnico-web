@@ -128,3 +128,31 @@ class LoginSecurityTests(BaseInventarioTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn(reverse('login'), response.url)
         self.assertNotIn('_auth_user_id', self.client.session)
+
+
+class LegalAcceptanceTests(BaseInventarioTestCase):
+    def test_registration_requires_legal_acceptance(self):
+        response = self.client.post(
+            reverse('registro'),
+            {
+                'username': 'nuevo_cliente',
+                'email': 'nuevo@test.com',
+                'nombres': 'Nuevo',
+                'apellidos': 'Cliente',
+                'telefono': '3011111111',
+                'documento_identidad': '987654321',
+                'direccion': 'Calle 99',
+                'ciudad': 'Bogotá',
+                'password1': 'ClaveSegura123!',
+                'password2': 'ClaveSegura123!',
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Debes aceptar la Política de Privacidad y los Términos de Servicio')
+        self.assertFalse(get_user_model().objects.filter(username='nuevo_cliente').exists())
+
+    def test_legal_banner_is_visible_on_first_visit(self):
+        response = self.client.get(reverse('landing'))
+        self.assertContains(response, 'Al continuar navegando en esta plataforma')
+        self.assertContains(response, 'legalConsentBanner')
