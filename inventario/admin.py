@@ -9,6 +9,7 @@ from .models import Usuario, Producto, Apartado, Categoria, HeroBanner
 admin.site.site_header = 'Administración Servicio Técnico'
 admin.site.site_title = 'Servicio Técnico Admin'
 admin.site.index_title = 'Gestión interna del sistema'
+admin.site.logout_template = 'admin/logged_out.html'
 
 
 def render_image_preview(url):

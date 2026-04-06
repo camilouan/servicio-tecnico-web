@@ -4,32 +4,91 @@
 {% block extrastyle %}
 {{ block.super }}
 <style>
-  .login-logo img,
+  .login-logo,
   .brand-image,
   .login-box .card-header img,
   .login-page img {
-    max-width: 90px !important;
-    max-height: 90px !important;
-    width: 90px !important;
-    height: auto !important;
-    object-fit: contain !important;
-    display: block;
-    margin: 0 auto 10px auto !important;
+    display: none !important;
+    max-width: 0 !important;
+    max-height: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
   }
 
-  .login-logo,
-  .login-box .card-header {
-    text-align: center !important;
-    overflow: hidden;
-  }
-
+  .login-box,
   .login-page .login-box {
     width: 420px;
+    margin-top: 2rem;
   }
 
   .login-card-body,
   .card {
     border-radius: 16px !important;
+  }
+
+  .admin-back-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    color: #e2e8f0;
+    background: linear-gradient(135deg, #0f172a, #2563eb);
+    box-shadow: 0 14px 30px rgba(37, 99, 235, 0.22);
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+
+  .admin-back-home:hover {
+    color: #fff;
+    transform: translateY(-1px);
+    filter: brightness(1.06);
+  }
+
+  .admin-logout-panel {
+    max-width: 520px;
+    margin: 2.2rem auto 0;
+    padding: 28px 24px;
+    text-align: center;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.94));
+    border: 1px solid rgba(96, 165, 250, 0.2);
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.28);
+  }
+
+  .admin-logout-panel h2 {
+    margin-bottom: 10px;
+    color: #f8fafc;
+    font-weight: 800;
+  }
+
+  .admin-logout-panel p {
+    margin-bottom: 18px;
+    color: #cbd5e1;
+  }
+
+  .admin-login-again {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    color: #1e293b;
+    background: #f8fafc;
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+
+  .admin-login-again:hover {
+    color: #0f172a;
+    transform: translateY(-1px);
+    filter: brightness(0.98);
   }
 
   .admin-apartados-launcher {
@@ -241,6 +300,18 @@
     }
   }
 </style>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+{% if not request.user.is_authenticated and '/admin/' in request.path %}
+  <div style="text-align:center; margin-top: 12px;">
+    <a href="/" class="admin-back-home">
+      <span>←</span>
+      <span>Volver a la página principal</span>
+    </a>
+  </div>
+{% endif %}
 {% endblock %}
 
 {% block footer %}
