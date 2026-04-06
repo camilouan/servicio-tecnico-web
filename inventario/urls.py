@@ -18,6 +18,8 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
 
     path('logout/', views.logout_view, name='logout'),
+    path('politica-privacidad/', views.politica_privacidad, name='politica_privacidad'),
+    path('terminos-servicio/', views.terminos_servicio, name='terminos_servicio'),
     path('mis-apartados/', views.mis_apartados, name='mis_apartados'),
     path('mis-apartados/estado/', views.estado_apartados_api, name='estado_apartados_api'),
     path('panel-admin/apartados/resumen/', views.admin_apartados_resumen_api, name='admin_apartados_resumen_api'),
