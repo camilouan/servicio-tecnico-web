@@ -36,7 +36,10 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            # después de iniciar sesión vamos al catálogo de productos
+
+            if getattr(user, 'rol', '') == 'administrador' or user.is_staff or user.is_superuser:
+                return redirect('/admin/')
+
             return redirect('productos')
     else:
         form = AuthenticationForm()
