@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.core.cache import cache
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
@@ -25,6 +27,8 @@ def registro(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            request.session.set_expiry(settings.SESSION_INACTIVITY_TIMEOUT)
+            request.session['last_activity'] = timezone.now().isoformat()
             # redirige al catálogo, no existe 'home' en urls
             return redirect('productos')
     else:
@@ -33,17 +37,57 @@ def registro(request):
     return render(request, 'registro.html', {'form': form})
 
 
+def _get_client_ip(request):
+    forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if forwarded_for:
+        return forwarded_for.split(',')[0].strip()
+    return request.META.get('REMOTE_ADDR', 'desconocido')
+
+
+def _login_attempt_keys(request, username):
+    safe_username = (username or 'anonimo').strip().lower()
+    safe_ip = _get_client_ip(request).replace(':', '_').replace('.', '_')
+    base_key = f'login_security:{safe_username}:{safe_ip}'
+    return f'{base_key}:attempts', f'{base_key}:lock'
+
+
 def login_view(request):
     if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        attempts_key, lock_key = _login_attempt_keys(request, username)
         form = AuthenticationForm(request, data=request.POST)
+
+        locked_until = cache.get(lock_key)
+        if locked_until and locked_until > timezone.now():
+            segundos_restantes = max(1, int((locked_until - timezone.now()).total_seconds()))
+            minutos_restantes = max(1, (segundos_restantes + 59) // 60)
+            form.add_error(None, f'Demasiados intentos fallidos. Tu acceso está bloqueado temporalmente. Intenta de nuevo en {minutos_restantes} minuto(s).')
+            return render(request, 'login.html', {'form': form})
+
         if form.is_valid():
+            cache.delete(attempts_key)
+            cache.delete(lock_key)
             user = form.get_user()
             login(request, user)
+            request.session.set_expiry(settings.SESSION_INACTIVITY_TIMEOUT)
+            request.session['last_activity'] = timezone.now().isoformat()
 
             if getattr(user, 'rol', '') == 'administrador' or user.is_staff or user.is_superuser:
                 return redirect('/admin/')
 
             return redirect('productos')
+
+        intentos = cache.get(attempts_key, 0) + 1
+        if intentos >= settings.LOGIN_MAX_FAILED_ATTEMPTS:
+            bloqueo_hasta = timezone.now() + timezone.timedelta(seconds=settings.LOGIN_LOCKOUT_SECONDS)
+            cache.set(lock_key, bloqueo_hasta, timeout=settings.LOGIN_LOCKOUT_SECONDS)
+            cache.delete(attempts_key)
+            minutos_bloqueo = max(1, (settings.LOGIN_LOCKOUT_SECONDS + 59) // 60)
+            form.add_error(None, f'Demasiados intentos fallidos. Tu acceso fue bloqueado temporalmente durante {minutos_bloqueo} minuto(s).')
+        else:
+            cache.set(attempts_key, intentos, timeout=settings.LOGIN_LOCKOUT_SECONDS)
+            restantes = settings.LOGIN_MAX_FAILED_ATTEMPTS - intentos
+            form.add_error(None, f'Credenciales inválidas. Te quedan {restantes} intento(s) antes del bloqueo temporal.')
     else:
         form = AuthenticationForm()
 
