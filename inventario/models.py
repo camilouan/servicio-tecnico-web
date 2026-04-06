@@ -1,3 +1,5 @@
+import random
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
@@ -205,6 +207,8 @@ class Apartado(models.Model):
 
     cantidad = models.IntegerField()
 
+    codigo_verificacion = models.CharField(max_length=6, unique=True, blank=True, null=True)
+
     fecha_apartado = models.DateTimeField(default=timezone.now)
 
     fecha_expiracion = models.DateTimeField()
@@ -222,6 +226,17 @@ class Apartado(models.Model):
         blank=True,
         related_name='apartados_confirmados'
     )
+
+    def generar_codigo_verificacion(self):
+        while True:
+            codigo = f"{random.randint(0, 999999):06d}"
+            if not Apartado.objects.filter(codigo_verificacion=codigo).exclude(pk=self.pk).exists():
+                return codigo
+
+    def save(self, *args, **kwargs):
+        if not self.codigo_verificacion:
+            self.codigo_verificacion = self.generar_codigo_verificacion()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.usuario.username} - {self.producto.nombre}"
