@@ -13,7 +13,4 @@ python manage.py collectstatic --noinput
 echo "Creating superuser if it doesn't exist..."
 python manage.py createsu
 
-echo "Seeding initial data..."
-python manage.py seed
-
 echo "Build completed successfully!"
