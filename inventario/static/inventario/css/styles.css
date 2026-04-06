@@ -289,6 +289,19 @@ main {
   margin-top: 1.2rem;
 }
 
+.filter-panel {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 1.25rem;
+  padding: 1rem;
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+}
+
+.filter-panel .form-label {
+  font-weight: 600;
+  color: #334155;
+}
+
 .card-glow {
   border: 0;
   border-radius: 1.5rem;

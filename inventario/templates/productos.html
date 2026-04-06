@@ -10,9 +10,21 @@
             <div class="col-md-8">
                 <div class="catalog-header mb-3">
                     <span class="catalog-tag">Novedades Tech</span>
-                    <h1 class="display-5 fw-bold catalog-title">Catálogo de Productos</h1>
+                    <h1 class="display-5 fw-bold catalog-title">
+                        {% if categoria_seleccionada %}
+                            {{ categoria_seleccionada }}
+                        {% else %}
+                            Catálogo de Productos
+                        {% endif %}
+                    </h1>
                 </div>
-                <p class="catalog-description">Explora lo último en tecnología: accesorios premium, gadgets innovadores y equipos con stock inmediato para que tu vida digital sea más rápida, segura y elegante.</p>
+                <p class="catalog-description">
+                    {% if categoria_seleccionada %}
+                        Estás viendo los productos disponibles en la categoría <strong>{{ categoria_seleccionada }}</strong>.
+                    {% else %}
+                        Explora lo último en tecnología: accesorios premium, gadgets innovadores y equipos con stock inmediato para que tu vida digital sea más rápida, segura y elegante.
+                    {% endif %}
+                </p>
             </div>
             <div class="col-md-4 text-md-end">
                 {% if user.is_authenticated %}
@@ -22,6 +34,51 @@
                 {% endif %}
             </div>
         </div>
+
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            <a href="{% url 'productos' %}" class="btn btn-sm {% if not categoria_seleccionada %}btn-brand{% else %}btn-outline-primary{% endif %}">Todos</a>
+            {% for categoria in categorias %}
+                <a href="{% url 'productos' %}?categoria={{ categoria.nombre|urlencode }}" class="btn btn-sm {% if categoria_seleccionada|lower == categoria.nombre|lower %}btn-brand{% else %}btn-outline-primary{% endif %}">
+                    {{ categoria.nombre }}
+                </a>
+            {% endfor %}
+        </div>
+
+        <form method="get" class="filter-panel mb-4">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Disponibilidad</label>
+                    <select name="disponibilidad" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="disponibles" {% if disponibilidad == 'disponibles' %}selected{% endif %}>Disponibles</option>
+                        <option value="agotados" {% if disponibilidad == 'agotados' %}selected{% endif %}>Agotados</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Precio mínimo</label>
+                    <input type="number" name="precio_min" value="{{ precio_min }}" class="form-control" min="0">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Precio máximo</label>
+                    <input type="number" name="precio_max" value="{{ precio_max }}" class="form-control" min="0">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Ordenar por</label>
+                    <select name="orden" class="form-select">
+                        <option value="">Nombre</option>
+                        <option value="recientes" {% if orden == 'recientes' %}selected{% endif %}>Más recientes</option>
+                        <option value="precio_asc" {% if orden == 'precio_asc' %}selected{% endif %}>Más baratos</option>
+                        <option value="precio_desc" {% if orden == 'precio_desc' %}selected{% endif %}>Más caros</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    {% if categoria_seleccionada %}
+                    <input type="hidden" name="categoria" value="{{ categoria_seleccionada }}">
+                    {% endif %}
+                    <button type="submit" class="btn btn-brand w-100">Filtrar</button>
+                </div>
+            </div>
+        </form>
 
         <div class="row g-4">
             {% for producto in productos %}

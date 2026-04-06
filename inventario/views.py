@@ -80,8 +80,58 @@ def landing(request):
 
 def productos(request):
     ensure_initial_data()
-    productos = Producto.objects.all()
-    return render(request, 'productos.html', {'productos': productos})
+    categoria_seleccionada = request.GET.get('categoria', '').strip()
+    disponibilidad = request.GET.get('disponibilidad', '').strip()
+    orden = request.GET.get('orden', '').strip()
+    precio_min = request.GET.get('precio_min', '').strip()
+    precio_max = request.GET.get('precio_max', '').strip()
+
+    productos = Producto.objects.all().select_related('categoria')
+
+    if categoria_seleccionada:
+        productos = productos.filter(categoria__nombre__iexact=categoria_seleccionada)
+
+    if disponibilidad == 'disponibles':
+        productos = productos.filter(stock_disponible__gt=0)
+    elif disponibilidad == 'agotados':
+        productos = productos.filter(stock_disponible__lte=0)
+
+    if precio_min:
+        try:
+            productos = productos.filter(precio__gte=precio_min)
+        except ValueError:
+            pass
+
+    if precio_max:
+        try:
+            productos = productos.filter(precio__lte=precio_max)
+        except ValueError:
+            pass
+
+    if orden == 'precio_asc':
+        productos = productos.order_by('precio')
+    elif orden == 'precio_desc':
+        productos = productos.order_by('-precio')
+    elif orden == 'recientes':
+        productos = productos.order_by('-fecha_creacion')
+    else:
+        productos = productos.order_by('nombre')
+
+    categorias = Categoria.objects.filter(activa=True)
+
+    return render(
+        request,
+        'productos.html',
+        {
+            'productos': productos,
+            'categorias': categorias,
+            'categoria_seleccionada': categoria_seleccionada,
+            'disponibilidad': disponibilidad,
+            'orden': orden,
+            'precio_min': precio_min,
+            'precio_max': precio_max,
+        },
+    )
 
 @login_required
 def mis_apartados(request):
