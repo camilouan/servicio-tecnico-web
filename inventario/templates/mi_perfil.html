@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Mi perfil | Servicio Técnico{% endblock %}
+
+{% block content %}
+<section class="py-6">
+    <div class="container">
+        <div class="row mb-4 align-items-center">
+            <div class="col-lg-8">
+                <h2 class="section-title">Mi perfil</h2>
+                <p class="text-muted mb-0">Aquí puedes actualizar tus datos permitidos, cambiar tu contraseña una vez por semana y administrar tu cuenta de forma segura.</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="profile-card h-100">
+                    <div class="text-center">
+                        {% if user.foto_perfil_url %}
+                            <img src="{{ user.foto_perfil_url }}" alt="{{ user.username }}" class="profile-avatar mb-3">
+                        {% else %}
+                            <div class="profile-avatar profile-avatar-placeholder mb-3">{{ user.username|first|upper }}</div>
+                        {% endif %}
+                        <h4 class="fw-bold mb-1">{{ user.nombres }} {{ user.apellidos }}</h4>
+                        <p class="text-muted mb-3">@{{ user.username }}</p>
+                    </div>
+
+                    <div class="profile-readonly-list">
+                        <div class="readonly-item">
+                            <span class="readonly-label">Documento</span>
+                            <strong>{{ user.documento_identidad }}</strong>
+                        </div>
+                        <div class="readonly-item">
+                            <span class="readonly-label">Usuario</span>
+                            <strong>{{ user.username }}</strong>
+                        </div>
+                        <div class="readonly-item">
+                            <span class="readonly-label">Rol</span>
+                            <strong>{{ user.get_rol_display }}</strong>
+                        </div>
+                        <div class="readonly-item">
+                            <span class="readonly-label">Registro</span>
+                            <strong>{{ user.fecha_registro|date:"d/m/Y" }}</strong>
+                        </div>
+                    </div>
+                    <p class="small text-muted mt-3 mb-0">Estos datos son sensibles o permanentes y no se modifican libremente desde el perfil.</p>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="profile-card mb-4">
+                    <h4 class="fw-bold mb-3">Editar datos permitidos</h4>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="actualizar_perfil">
+                        <div class="row g-3">
+                            {% for field in perfil_form %}
+                            <div class="col-md-6 {% if field.name == 'foto_perfil' %}col-12{% endif %}">
+                                <label class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                <div class="text-danger small">{{ field.errors }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-brand">Guardar cambios</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="profile-card mb-4">
+                    <h4 class="fw-bold mb-3">Cambiar contraseña</h4>
+                    <p class="text-muted">Por seguridad, este cambio solo se permite <strong>una vez por semana</strong>.</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="cambiar_password">
+                        <div class="row g-3">
+                            {% for field in password_form %}
+                            <div class="col-12">
+                                <label class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                <div class="small text-muted">{{ field.help_text|safe }}</div>
+                                {% endif %}
+                                {% if field.errors %}
+                                <div class="text-danger small">{{ field.errors }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                            {% if password_form.non_field_errors %}
+                            <div class="col-12 text-danger small">{{ password_form.non_field_errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-outline-primary">Actualizar contraseña</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="profile-card danger-zone">
+                    <h4 class="fw-bold mb-3 text-danger">Eliminar perfil</h4>
+                    <p class="text-muted">Si eliminas tu cuenta, también se eliminarán automáticamente tus apartados asociados en el sistema.</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="eliminar_cuenta">
+                        <div class="mb-3">
+                            <label class="form-label">{{ eliminar_form.password_actual.label }}</label>
+                            {{ eliminar_form.password_actual }}
+                            {% if eliminar_form.password_actual.errors %}
+                            <div class="text-danger small">{{ eliminar_form.password_actual.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-check mb-3">
+                            {{ eliminar_form.confirmar }}
+                            <label class="form-check-label" for="{{ eliminar_form.confirmar.id_for_label }}">
+                                {{ eliminar_form.confirmar.label }}
+                            </label>
+                            {% if eliminar_form.confirmar.errors %}
+                            <div class="text-danger small">{{ eliminar_form.confirmar.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <button type="submit" class="btn btn-danger">Eliminar mi cuenta</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

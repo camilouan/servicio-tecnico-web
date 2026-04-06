@@ -19,6 +19,7 @@ urlpatterns = [
 
     path('logout/', views.logout_view, name='logout'),
     path('mis-apartados/', views.mis_apartados, name='mis_apartados'),
+    path('mi-perfil/', views.mi_perfil, name='mi_perfil'),
 
 ]
 

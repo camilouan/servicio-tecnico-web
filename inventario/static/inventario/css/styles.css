@@ -109,6 +109,73 @@ main {
   color: #ffffff;
 }
 
+.user-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 0.4rem 0.85rem 0.4rem 0.45rem;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+}
+
+.user-chip:hover {
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.1));
+  transform: translateY(-1px);
+}
+
+.user-chip-glow {
+  position: absolute;
+  inset: auto auto -12px -8px;
+  width: 42px;
+  height: 42px;
+  background: radial-gradient(circle, rgba(96, 165, 250, 0.5), transparent 70%);
+  pointer-events: none;
+}
+
+.user-chip-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  position: relative;
+  z-index: 1;
+}
+
+.user-chip-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  position: relative;
+  z-index: 1;
+}
+
+.user-chip-label {
+  font-size: 0.7rem;
+  color: rgba(226, 232, 240, 0.75);
+}
+
+.user-chip-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.user-chip-placeholder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #60a5fa, #2563eb);
+  font-weight: 700;
+}
+
 .hero {
   position: relative;
   background: linear-gradient(180deg, rgba(7, 18, 43, 0.36), rgba(7, 18, 43, 0.36)), url('/static/inventario/images/hero-default.jpg');
@@ -512,6 +579,57 @@ main {
 .footer-links a:hover {
   color: #ffffff;
   transform: translateX(5px);
+}
+
+/* Perfil de usuario */
+.profile-card {
+  background: #ffffff;
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid rgba(59, 130, 246, 0.12);
+}
+
+.profile-avatar-placeholder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #3b82f6, #0f172a);
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.profile-readonly-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.readonly-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.9rem;
+  background: #f8fbff;
+}
+
+.readonly-label {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.danger-zone {
+  border: 1px solid rgba(220, 38, 38, 0.18);
+  background: linear-gradient(180deg, #fff 0%, #fff5f5 100%);
 }
 
 /* Mis apartados process section */

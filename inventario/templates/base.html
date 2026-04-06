@@ -47,11 +47,25 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'mis_apartados' %}">Mis apartados</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'mi_perfil' %}">Mi perfil</a>
+                </li>
                 {% endif %}
             </ul>
             <div class="d-flex align-items-center gap-2">
                 {% if user.is_authenticated %}
-                    <span class="text-white small">👤 {{ user.username }}</span>
+                    <a href="{% url 'mi_perfil' %}" class="user-chip text-decoration-none">
+                        <span class="user-chip-glow"></span>
+                        {% if user.foto_perfil_url %}
+                            <img src="{{ user.foto_perfil_url }}" alt="{{ user.username }}" class="user-chip-avatar">
+                        {% else %}
+                            <span class="user-chip-avatar user-chip-placeholder">{{ user.username|first|upper }}</span>
+                        {% endif %}
+                        <span class="user-chip-text">
+                            <span class="user-chip-label">Mi perfil</span>
+                            <span class="user-chip-name">{{ user.username }}</span>
+                        </span>
+                    </a>
                     <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">Cerrar sesión</a>
                 {% else %}
                     <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Login</a>
