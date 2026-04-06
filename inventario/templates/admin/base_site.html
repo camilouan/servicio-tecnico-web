@@ -1,0 +1,28 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  .login-logo img,
+  .brand-image,
+  .login-box .card-header img {
+    max-width: 140px !important;
+    max-height: 140px !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    display: block;
+    margin: 0 auto 12px auto;
+  }
+
+  .login-page .login-box {
+    width: 420px;
+  }
+
+  .login-card-body,
+  .card {
+    border-radius: 16px !important;
+  }
+</style>
+{% endblock %}
