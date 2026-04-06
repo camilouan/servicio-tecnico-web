@@ -514,6 +514,71 @@ main {
   transform: translateX(5px);
 }
 
+/* Mis apartados process section */
+.process-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  height: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.process-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 25px 40px rgba(15, 23, 42, 0.12);
+}
+
+.process-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  color: #ffffff;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.process-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+}
+
+.process-card p {
+  color: #475569;
+  line-height: 1.8;
+  margin-bottom: 0;
+}
+
+.process-note {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.16), rgba(15, 23, 42, 0.08));
+  border: 1px solid rgba(59, 130, 246, 0.18);
+}
+
+.process-note h3 {
+  color: #0f172a;
+  margin-bottom: 1rem;
+}
+
+.process-note p {
+  color: #334155;
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  .process-card {
+    padding: 1.5rem;
+  }
+
+  .process-step {
+    width: 36px;
+    height: 36px;
+  }
+}
+
 .footer-links a:hover::before {
   width: 100%;
 }
