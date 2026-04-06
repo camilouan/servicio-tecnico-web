@@ -1,6 +1,7 @@
 import random
 
-from django.db import models
+from django.core.exceptions import ValidationError
+from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.utils.text import slugify
@@ -200,6 +201,7 @@ class Apartado(models.Model):
         ('expirado', 'Expirado'),
         ('entregado', 'Entregado'),
     )
+    ESTADOS_CON_STOCK_OCUPADO = {'pendiente', 'confirmado', 'entregado'}
 
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
 
@@ -227,16 +229,68 @@ class Apartado(models.Model):
         related_name='apartados_confirmados'
     )
 
+    @classmethod
+    def actualizar_apartados_vencidos(cls):
+        vencidos = cls.objects.filter(
+            estado='pendiente',
+            fecha_expiracion__lt=timezone.now(),
+        )
+
+        total_actualizados = 0
+        for apartado in vencidos:
+            apartado.estado = 'expirado'
+            if not apartado.motivo_cancelacion:
+                apartado.motivo_cancelacion = 'Apartado expirado automáticamente por superar el tiempo límite.'
+            apartado.save(update_fields=['estado', 'motivo_cancelacion'])
+            total_actualizados += 1
+
+        return total_actualizados
+
     def generar_codigo_verificacion(self):
         while True:
             codigo = f"{random.randint(0, 999999):06d}"
             if not Apartado.objects.filter(codigo_verificacion=codigo).exclude(pk=self.pk).exists():
                 return codigo
 
+    def _cantidad_reservada_para_estado(self, estado, cantidad=None):
+        cantidad = self.cantidad if cantidad is None else cantidad
+        return cantidad if estado in self.ESTADOS_CON_STOCK_OCUPADO else 0
+
+    def _ajustar_stock_producto(self, producto_id, delta_consumo):
+        if delta_consumo == 0:
+            return
+
+        producto = Producto.objects.select_for_update().get(pk=producto_id)
+
+        if delta_consumo > 0 and producto.stock_disponible < delta_consumo:
+            raise ValidationError(f'No hay suficiente stock disponible para {producto.nombre}.')
+
+        producto.stock_disponible -= delta_consumo
+        producto.save(update_fields=['stock_disponible'])
+
     def save(self, *args, **kwargs):
         if not self.codigo_verificacion:
             self.codigo_verificacion = self.generar_codigo_verificacion()
-        super().save(*args, **kwargs)
+
+        previo = None
+        if self.pk:
+            previo = Apartado.objects.filter(pk=self.pk).first()
+
+        with transaction.atomic():
+            if previo is None:
+                consumo_nuevo = self._cantidad_reservada_para_estado(self.estado)
+                self._ajustar_stock_producto(self.producto_id, consumo_nuevo)
+            else:
+                consumo_anterior = self._cantidad_reservada_para_estado(previo.estado, previo.cantidad)
+                consumo_actual = self._cantidad_reservada_para_estado(self.estado, self.cantidad)
+
+                if previo.producto_id == self.producto_id:
+                    self._ajustar_stock_producto(self.producto_id, consumo_actual - consumo_anterior)
+                else:
+                    self._ajustar_stock_producto(previo.producto_id, -consumo_anterior)
+                    self._ajustar_stock_producto(self.producto_id, consumo_actual)
+
+            super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.usuario.username} - {self.producto.nombre}"

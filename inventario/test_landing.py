@@ -1,17 +1,15 @@
-import pytest
+from django.test import TestCase
 from django.urls import reverse
+
 from inventario.models import Categoria
 
-pytestmark = pytest.mark.django_db
 
+class LandingViewTests(TestCase):
+    def test_landing_view_status_code(self):
+        response = self.client.get(reverse('landing'))
+        self.assertEqual(response.status_code, 200)
 
-def test_landing_view_status_code(client):
-    url = reverse('landing')
-    response = client.get(url)
-    assert response.status_code == 200
-
-
-def test_landing_includes_categoria(client):
-    Categoria.objects.create(nombre='Celulares', descripcion='Telefonos', activa=True)
-    response = client.get(reverse('landing'))
-    assert b'Celulares' in response.content
+    def test_landing_includes_categoria(self):
+        Categoria.objects.create(nombre='Celulares', descripcion='Telefonos', activa=True)
+        response = self.client.get(reverse('landing'))
+        self.assertContains(response, 'Celulares')

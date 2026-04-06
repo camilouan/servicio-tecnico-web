@@ -12,6 +12,8 @@ def admin_apartados_popup(request):
     if not request.path.startswith('/admin'):
         return {'admin_popup_summary': None}
 
+    Apartado.actualizar_apartados_vencidos()
+
     estados_visibles = ['pendiente', 'confirmado']
     recientes_qs = (
         Apartado.objects.filter(estado__in=estados_visibles)
