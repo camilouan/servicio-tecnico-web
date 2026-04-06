@@ -246,7 +246,7 @@
 {% block footer %}
 {{ block.super }}
 {% if request.user.is_staff or request.user.is_superuser %}
-<div id="adminApartadosOverlay" class="admin-apartados-overlay" aria-hidden="true">
+<div id="adminApartadosOverlay" class="admin-apartados-overlay is-visible" aria-hidden="false">
   <div class="admin-apartados-modal" role="dialog" aria-modal="true" aria-labelledby="adminApartadosTitle">
     <button type="button" class="admin-apartados-close" id="closeAdminApartadosPopup" aria-label="Cerrar resumen">&times;</button>
 
@@ -260,25 +260,38 @@
       <div class="admin-apartados-stats">
         <div class="admin-apartados-stat">
           <span class="admin-apartados-stat-label">Pendientes</span>
-          <strong id="adminPendientesCount">0</strong>
+          <strong id="adminPendientesCount">{{ admin_popup_summary.pendientes|default:0 }}</strong>
         </div>
         <div class="admin-apartados-stat">
           <span class="admin-apartados-stat-label">Confirmados</span>
-          <strong id="adminConfirmadosCount">0</strong>
+          <strong id="adminConfirmadosCount">{{ admin_popup_summary.confirmados|default:0 }}</strong>
         </div>
         <div class="admin-apartados-stat">
           <span class="admin-apartados-stat-label">Nuevos 24h</span>
-          <strong id="adminNuevosCount">0</strong>
+          <strong id="adminNuevosCount">{{ admin_popup_summary.nuevos_hoy|default:0 }}</strong>
         </div>
       </div>
 
       <div class="admin-apartados-list-head">
         <strong>Últimos apartados registrados</strong>
-        <small id="adminResumenFecha">Actualizando...</small>
+        <small id="adminResumenFecha">Disponible ahora</small>
       </div>
 
       <div id="adminApartadosList" class="admin-apartados-list">
-        <div class="admin-apartados-empty">Cargando información del panel...</div>
+        {% if admin_popup_summary and admin_popup_summary.recientes %}
+          {% for apartado in admin_popup_summary.recientes %}
+            <div class="admin-apartados-item">
+              <div>
+                <span class="admin-apartados-item-title">{{ apartado.usuario.get_full_name|default:apartado.usuario.username }}</span>
+                <span class="admin-apartados-item-meta">{{ apartado.producto.nombre }} · {{ apartado.cantidad }} unidad(es)</span>
+                <span class="admin-apartados-item-time">Código {{ apartado.codigo_verificacion|default:'------' }} · {{ apartado.fecha_apartado|date:'d/m/Y g:i a' }}</span>
+              </div>
+              <span class="admin-apartados-badge {{ apartado.estado }}">{{ apartado.get_estado_display }}</span>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="admin-apartados-empty">No hay apartados pendientes o confirmados en este momento.</div>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -289,7 +302,7 @@
 </button>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+  (function () {
     const apiUrl = "{% url 'admin_apartados_resumen_api' %}";
     const overlay = document.getElementById('adminApartadosOverlay');
     const openButton = document.getElementById('openAdminApartadosPopup');
@@ -299,8 +312,6 @@
     const nuevosCount = document.getElementById('adminNuevosCount');
     const resumenFecha = document.getElementById('adminResumenFecha');
     const listContainer = document.getElementById('adminApartadosList');
-    const storageKey = 'adminApartadosSeenIds';
-    let initialShown = false;
 
     if (!overlay || !openButton || !closeButton || !listContainer) {
       return;
@@ -323,22 +334,6 @@
     function hidePopup() {
       overlay.classList.remove('is-visible');
       overlay.setAttribute('aria-hidden', 'true');
-    }
-
-    function readSeenIds() {
-      try {
-        return JSON.parse(sessionStorage.getItem(storageKey) || '[]');
-      } catch (error) {
-        return [];
-      }
-    }
-
-    function writeSeenIds(ids) {
-      try {
-        sessionStorage.setItem(storageKey, JSON.stringify(ids.slice(0, 40)));
-      } catch (error) {
-        console.warn('No fue posible guardar el estado del popup admin.', error);
-      }
     }
 
     function renderItems(items) {
@@ -370,15 +365,10 @@
         });
 
         if (!response.ok) {
-          throw new Error('No se pudo consultar el resumen.');
+          return;
         }
 
         const data = await response.json();
-        const items = data.recientes || [];
-        const currentIds = items.map(function (item) { return item.id; });
-        const seenIds = readSeenIds();
-        const newIds = currentIds.filter(function (id) { return !seenIds.includes(id); });
-
         pendientesCount.textContent = data.pendientes || 0;
         confirmadosCount.textContent = data.confirmados || 0;
         nuevosCount.textContent = data.nuevos_hoy || 0;
@@ -386,19 +376,9 @@
           hour: 'numeric',
           minute: '2-digit'
         });
-
-        renderItems(items);
-
-        if (!initialShown) {
-          showPopup();
-          initialShown = true;
-        } else if (newIds.length > 0) {
-          showPopup();
-        }
-
-        writeSeenIds(Array.from(new Set(currentIds.concat(seenIds))));
+        renderItems(data.recientes || []);
       } catch (error) {
-        listContainer.innerHTML = '<div class="admin-apartados-empty">No fue posible cargar el resumen de apartados en este momento.</div>';
+        console.warn('No se pudo actualizar el popup del admin.', error);
       }
     }
 
@@ -410,9 +390,10 @@
       }
     });
 
-    updateSummary();
+    showPopup();
+    window.setTimeout(updateSummary, 300);
     window.setInterval(updateSummary, 20000);
-  });
+  })();
 </script>
 {% endif %}
 {% endblock %}
