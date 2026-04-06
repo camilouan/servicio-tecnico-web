@@ -246,7 +246,7 @@
 {% block footer %}
 {{ block.super }}
 {% if request.user.is_staff or request.user.is_superuser %}
-<div id="adminApartadosOverlay" class="admin-apartados-overlay is-visible" aria-hidden="false">
+<div id="adminApartadosOverlay" class="admin-apartados-overlay" aria-hidden="true">
   <div class="admin-apartados-modal" role="dialog" aria-modal="true" aria-labelledby="adminApartadosTitle">
     <button type="button" class="admin-apartados-close" id="closeAdminApartadosPopup" aria-label="Cerrar resumen">&times;</button>
 
@@ -280,7 +280,7 @@
       <div id="adminApartadosList" class="admin-apartados-list">
         {% if admin_popup_summary and admin_popup_summary.recientes %}
           {% for apartado in admin_popup_summary.recientes %}
-            <div class="admin-apartados-item">
+            <div class="admin-apartados-item" data-apartado-id="{{ apartado.id }}">
               <div>
                 <span class="admin-apartados-item-title">{{ apartado.usuario.get_full_name|default:apartado.usuario.username }}</span>
                 <span class="admin-apartados-item-meta">{{ apartado.producto.nombre }} · {{ apartado.cantidad }} unidad(es)</span>
@@ -312,6 +312,8 @@
     const nuevosCount = document.getElementById('adminNuevosCount');
     const resumenFecha = document.getElementById('adminResumenFecha');
     const listContainer = document.getElementById('adminApartadosList');
+    const seenIdsKey = 'adminApartadosSeenIds';
+    const autoShownKey = 'adminApartadosPopupShown';
 
     if (!overlay || !openButton || !closeButton || !listContainer) {
       return;
@@ -336,6 +338,35 @@
       overlay.setAttribute('aria-hidden', 'true');
     }
 
+    function readSeenIds() {
+      try {
+        return JSON.parse(sessionStorage.getItem(seenIdsKey) || '[]');
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function writeSeenIds(ids) {
+      try {
+        sessionStorage.setItem(seenIdsKey, JSON.stringify(ids.slice(0, 50)));
+      } catch (error) {
+        console.warn('No se pudo guardar el historial de apartados vistos.', error);
+      }
+    }
+
+    function markCurrentItemsAsSeen() {
+      const currentIds = Array.from(listContainer.querySelectorAll('[data-apartado-id]'))
+        .map(function (element) { return Number(element.dataset.apartadoId); })
+        .filter(Boolean);
+
+      if (!currentIds.length) {
+        return;
+      }
+
+      const seenIds = readSeenIds();
+      writeSeenIds(Array.from(new Set(seenIds.concat(currentIds))));
+    }
+
     function renderItems(items) {
       if (!items.length) {
         listContainer.innerHTML = '<div class="admin-apartados-empty">No hay apartados pendientes o confirmados en este momento.</div>';
@@ -344,7 +375,7 @@
 
       listContainer.innerHTML = items.map(function (item) {
         return `
-          <div class="admin-apartados-item">
+          <div class="admin-apartados-item" data-apartado-id="${escapeHtml(item.id)}">
             <div>
               <span class="admin-apartados-item-title">${escapeHtml(item.cliente)}</span>
               <span class="admin-apartados-item-meta">${escapeHtml(item.producto)} · ${escapeHtml(item.cantidad)} unidad(es)</span>
@@ -369,6 +400,11 @@
         }
 
         const data = await response.json();
+        const items = data.recientes || [];
+        const currentIds = items.map(function (item) { return Number(item.id); }).filter(Boolean);
+        const seenIds = readSeenIds();
+        const newIds = currentIds.filter(function (id) { return !seenIds.includes(id); });
+
         pendientesCount.textContent = data.pendientes || 0;
         confirmadosCount.textContent = data.confirmados || 0;
         nuevosCount.textContent = data.nuevos_hoy || 0;
@@ -376,7 +412,13 @@
           hour: 'numeric',
           minute: '2-digit'
         });
-        renderItems(data.recientes || []);
+
+        renderItems(items);
+        writeSeenIds(Array.from(new Set(seenIds.concat(currentIds))));
+
+        if (newIds.length > 0) {
+          showPopup();
+        }
       } catch (error) {
         console.warn('No se pudo actualizar el popup del admin.', error);
       }
@@ -390,8 +432,17 @@
       }
     });
 
-    showPopup();
-    window.setTimeout(updateSummary, 300);
+    markCurrentItemsAsSeen();
+
+    const totalInicial = (parseInt(pendientesCount.textContent || '0', 10) || 0) + (parseInt(confirmadosCount.textContent || '0', 10) || 0);
+    const yaMostradoEnSesion = sessionStorage.getItem(autoShownKey) === '1';
+
+    if (!yaMostradoEnSesion && totalInicial > 0) {
+      showPopup();
+      sessionStorage.setItem(autoShownKey, '1');
+    }
+
+    window.setTimeout(updateSummary, 400);
     window.setInterval(updateSummary, 20000);
   })();
 </script>
