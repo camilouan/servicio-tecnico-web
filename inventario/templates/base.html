@@ -43,6 +43,11 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/productos">Productos</a>
                 </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'mis_apartados' %}">Mis apartados</a>
+                </li>
+                {% endif %}
             </ul>
             <div class="d-flex align-items-center gap-2">
                 {% if user.is_authenticated %}
