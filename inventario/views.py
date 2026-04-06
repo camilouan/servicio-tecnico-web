@@ -208,7 +208,7 @@ def estado_apartados_api(request):
             'cantidad': apartado.cantidad,
             'estado': apartado.estado,
             'estado_display': apartado.get_estado_display(),
-            'fecha_apartado': timezone.localtime(apartado.fecha_apartado).strftime('%d/%m/%Y %H:%M'),
+            'fecha_apartado': timezone.localtime(apartado.fecha_apartado).strftime('%d/%m/%Y %I:%M %p'),
         }
         for apartado in apartados
     ]

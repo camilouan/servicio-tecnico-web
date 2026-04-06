@@ -70,7 +70,7 @@
                                 <span class="badge bg-light text-dark">{{ apartado.estado|capfirst }}</span>
                             {% endif %}
                         </td>
-                        <td>{{ apartado.fecha_apartado|date:"d M Y H:i" }}</td>
+                        <td>{{ apartado.fecha_apartado|date:"d/m/Y g:i a" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
