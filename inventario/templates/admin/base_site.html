@@ -31,5 +31,388 @@
   .card {
     border-radius: 16px !important;
   }
+
+  .admin-apartados-launcher {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 9997;
+    border: 0;
+    border-radius: 999px;
+    padding: 12px 18px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #0f172a, #2563eb);
+    box-shadow: 0 18px 40px rgba(37, 99, 235, 0.28);
+  }
+
+  .admin-apartados-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(15, 23, 42, 0.52);
+    backdrop-filter: blur(6px);
+  }
+
+  .admin-apartados-overlay.is-visible {
+    display: flex;
+  }
+
+  .admin-apartados-modal {
+    position: relative;
+    width: min(760px, 100%);
+    border-radius: 24px;
+    overflow: hidden;
+    color: #e2e8f0;
+    background:
+      radial-gradient(circle at top right, rgba(59, 130, 246, 0.28), transparent 28%),
+      linear-gradient(135deg, #0f172a, #111827 60%, #172554);
+    box-shadow: 0 25px 70px rgba(15, 23, 42, 0.42);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+  }
+
+  .admin-apartados-header {
+    padding: 22px 22px 10px;
+  }
+
+  .admin-apartados-pill {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #bfdbfe;
+    background: rgba(37, 99, 235, 0.18);
+    border: 1px solid rgba(96, 165, 250, 0.25);
+  }
+
+  .admin-apartados-header h2 {
+    margin: 0;
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .admin-apartados-header p {
+    margin: 8px 0 0;
+    color: #cbd5e1;
+  }
+
+  .admin-apartados-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .admin-apartados-close:hover,
+  .admin-apartados-launcher:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+  }
+
+  .admin-apartados-body {
+    padding: 0 22px 22px;
+  }
+
+  .admin-apartados-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .admin-apartados-stat {
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.52);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+  }
+
+  .admin-apartados-stat-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.82rem;
+    color: #93c5fd;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .admin-apartados-stat strong {
+    font-size: 1.75rem;
+    color: #fff;
+  }
+
+  .admin-apartados-list-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .admin-apartados-list-head strong {
+    color: #fff;
+  }
+
+  .admin-apartados-list-head small {
+    color: #cbd5e1;
+  }
+
+  .admin-apartados-list {
+    display: grid;
+    gap: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  .admin-apartados-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 15px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+  }
+
+  .admin-apartados-item-title {
+    display: block;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .admin-apartados-item-meta,
+  .admin-apartados-item-time {
+    display: block;
+    font-size: 0.86rem;
+    color: #cbd5e1;
+  }
+
+  .admin-apartados-badge {
+    flex-shrink: 0;
+    padding: 6px 11px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  .admin-apartados-badge.pendiente {
+    color: #fef3c7;
+    background: rgba(245, 158, 11, 0.22);
+  }
+
+  .admin-apartados-badge.confirmado {
+    color: #dcfce7;
+    background: rgba(34, 197, 94, 0.22);
+  }
+
+  .admin-apartados-empty {
+    padding: 18px;
+    text-align: center;
+    border-radius: 16px;
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  @media (max-width: 640px) {
+    .admin-apartados-launcher {
+      right: 14px;
+      bottom: 14px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+    }
+
+    .admin-apartados-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
 </style>
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+{% if request.user.is_staff or request.user.is_superuser %}
+<div id="adminApartadosOverlay" class="admin-apartados-overlay" aria-hidden="true">
+  <div class="admin-apartados-modal" role="dialog" aria-modal="true" aria-labelledby="adminApartadosTitle">
+    <button type="button" class="admin-apartados-close" id="closeAdminApartadosPopup" aria-label="Cerrar resumen">&times;</button>
+
+    <div class="admin-apartados-header">
+      <span class="admin-apartados-pill">Panel inteligente</span>
+      <h2 id="adminApartadosTitle">Resumen de apartados</h2>
+      <p>Visualiza los pedidos pendientes, confirmados y las últimas novedades apenas entras al panel.</p>
+    </div>
+
+    <div class="admin-apartados-body">
+      <div class="admin-apartados-stats">
+        <div class="admin-apartados-stat">
+          <span class="admin-apartados-stat-label">Pendientes</span>
+          <strong id="adminPendientesCount">0</strong>
+        </div>
+        <div class="admin-apartados-stat">
+          <span class="admin-apartados-stat-label">Confirmados</span>
+          <strong id="adminConfirmadosCount">0</strong>
+        </div>
+        <div class="admin-apartados-stat">
+          <span class="admin-apartados-stat-label">Nuevos 24h</span>
+          <strong id="adminNuevosCount">0</strong>
+        </div>
+      </div>
+
+      <div class="admin-apartados-list-head">
+        <strong>Últimos apartados registrados</strong>
+        <small id="adminResumenFecha">Actualizando...</small>
+      </div>
+
+      <div id="adminApartadosList" class="admin-apartados-list">
+        <div class="admin-apartados-empty">Cargando información del panel...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button type="button" id="openAdminApartadosPopup" class="admin-apartados-launcher" title="Ver resumen de apartados">
+  🔔 Resumen
+</button>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const apiUrl = "{% url 'admin_apartados_resumen_api' %}";
+    const overlay = document.getElementById('adminApartadosOverlay');
+    const openButton = document.getElementById('openAdminApartadosPopup');
+    const closeButton = document.getElementById('closeAdminApartadosPopup');
+    const pendientesCount = document.getElementById('adminPendientesCount');
+    const confirmadosCount = document.getElementById('adminConfirmadosCount');
+    const nuevosCount = document.getElementById('adminNuevosCount');
+    const resumenFecha = document.getElementById('adminResumenFecha');
+    const listContainer = document.getElementById('adminApartadosList');
+    const storageKey = 'adminApartadosSeenIds';
+    let initialShown = false;
+
+    if (!overlay || !openButton || !closeButton || !listContainer) {
+      return;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function showPopup() {
+      overlay.classList.add('is-visible');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function hidePopup() {
+      overlay.classList.remove('is-visible');
+      overlay.setAttribute('aria-hidden', 'true');
+    }
+
+    function readSeenIds() {
+      try {
+        return JSON.parse(sessionStorage.getItem(storageKey) || '[]');
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function writeSeenIds(ids) {
+      try {
+        sessionStorage.setItem(storageKey, JSON.stringify(ids.slice(0, 40)));
+      } catch (error) {
+        console.warn('No fue posible guardar el estado del popup admin.', error);
+      }
+    }
+
+    function renderItems(items) {
+      if (!items.length) {
+        listContainer.innerHTML = '<div class="admin-apartados-empty">No hay apartados pendientes o confirmados en este momento.</div>';
+        return;
+      }
+
+      listContainer.innerHTML = items.map(function (item) {
+        return `
+          <div class="admin-apartados-item">
+            <div>
+              <span class="admin-apartados-item-title">${escapeHtml(item.cliente)}</span>
+              <span class="admin-apartados-item-meta">${escapeHtml(item.producto)} · ${escapeHtml(item.cantidad)} unidad(es)</span>
+              <span class="admin-apartados-item-time">Código ${escapeHtml(item.codigo)} · ${escapeHtml(item.fecha_apartado)}</span>
+            </div>
+            <span class="admin-apartados-badge ${escapeHtml(item.estado)}">${escapeHtml(item.estado_display)}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function updateSummary() {
+      try {
+        const response = await fetch(apiUrl, {
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('No se pudo consultar el resumen.');
+        }
+
+        const data = await response.json();
+        const items = data.recientes || [];
+        const currentIds = items.map(function (item) { return item.id; });
+        const seenIds = readSeenIds();
+        const newIds = currentIds.filter(function (id) { return !seenIds.includes(id); });
+
+        pendientesCount.textContent = data.pendientes || 0;
+        confirmadosCount.textContent = data.confirmados || 0;
+        nuevosCount.textContent = data.nuevos_hoy || 0;
+        resumenFecha.textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-CO', {
+          hour: 'numeric',
+          minute: '2-digit'
+        });
+
+        renderItems(items);
+
+        if (!initialShown) {
+          showPopup();
+          initialShown = true;
+        } else if (newIds.length > 0) {
+          showPopup();
+        }
+
+        writeSeenIds(Array.from(new Set(currentIds.concat(seenIds))));
+      } catch (error) {
+        listContainer.innerHTML = '<div class="admin-apartados-empty">No fue posible cargar el resumen de apartados en este momento.</div>';
+      }
+    }
+
+    openButton.addEventListener('click', showPopup);
+    closeButton.addEventListener('click', hidePopup);
+    overlay.addEventListener('click', function (event) {
+      if (event.target === overlay) {
+        hidePopup();
+      }
+    });
+
+    updateSummary();
+    window.setInterval(updateSummary, 20000);
+  });
+</script>
+{% endif %}
 {% endblock %}

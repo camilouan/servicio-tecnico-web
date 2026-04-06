@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils import timezone
@@ -214,6 +215,42 @@ def estado_apartados_api(request):
     ]
 
     return JsonResponse({'apartados': data})
+
+
+@staff_member_required
+def admin_apartados_resumen_api(request):
+    estados_visibles = ['pendiente', 'confirmado']
+    recientes = (
+        Apartado.objects.filter(estado__in=estados_visibles)
+        .select_related('usuario', 'producto')
+        .order_by('-fecha_apartado')[:8]
+    )
+
+    limite_nuevos = timezone.now() - timezone.timedelta(hours=24)
+
+    data = {
+        'pendientes': Apartado.objects.filter(estado='pendiente').count(),
+        'confirmados': Apartado.objects.filter(estado='confirmado').count(),
+        'nuevos_hoy': Apartado.objects.filter(
+            estado__in=estados_visibles,
+            fecha_apartado__gte=limite_nuevos,
+        ).count(),
+        'recientes': [
+            {
+                'id': apartado.id,
+                'cliente': apartado.usuario.get_full_name() or apartado.usuario.username,
+                'producto': apartado.producto.nombre,
+                'cantidad': apartado.cantidad,
+                'codigo': apartado.codigo_verificacion or '------',
+                'estado': apartado.estado,
+                'estado_display': apartado.get_estado_display(),
+                'fecha_apartado': timezone.localtime(apartado.fecha_apartado).strftime('%d/%m/%Y %I:%M %p'),
+            }
+            for apartado in recientes
+        ],
+    }
+
+    return JsonResponse(data)
 
 
 @login_required
