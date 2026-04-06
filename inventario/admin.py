@@ -51,13 +51,14 @@ class CategoriaAdmin(admin.ModelAdmin):
 
 @admin.register(Apartado)
 class ApartadoAdmin(admin.ModelAdmin):
-    list_display = ('usuario', 'producto', 'cantidad', 'estado', 'fecha_apartado', 'fecha_expiracion')
+    list_display = ('usuario', 'producto', 'codigo_verificacion', 'cantidad', 'estado', 'fecha_apartado', 'fecha_expiracion')
     list_filter = ('estado', 'fecha_apartado')
-    search_fields = ('usuario__username', 'producto__nombre')
+    search_fields = ('usuario__username', 'producto__nombre', 'codigo_verificacion')
     autocomplete_fields = ('usuario', 'producto', 'confirmado_por')
     list_select_related = ('usuario', 'producto', 'confirmado_por')
     ordering = ('-fecha_apartado',)
     list_per_page = 25
+    readonly_fields = ('codigo_verificacion',)
 
 
 @admin.register(HeroBanner)

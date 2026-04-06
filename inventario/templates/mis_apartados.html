@@ -19,6 +19,7 @@
                 <thead class="table-light">
                     <tr>
                         <th>Producto</th>
+                        <th>Código</th>
                         <th>Cantidad</th>
                         <th>Estado</th>
                         <th>Fecha</th>
@@ -28,6 +29,7 @@
                     {% for apartado in apartados %}
                     <tr>
                         <td>{{ apartado.producto.nombre }}</td>
+                        <td><span class="badge text-bg-dark fs-6">{{ apartado.codigo_verificacion }}</span></td>
                         <td>{{ apartado.cantidad }}</td>
                         <td>
                             {% if apartado.estado == 'pendiente' %}
@@ -61,7 +63,7 @@
         <div class="row align-items-center mb-4">
             <div class="col-lg-8">
                 <h2 class="section-title">¿Cómo funciona el apartado?</h2>
-                <p class="text-muted">Nuestro proceso es sencillo: apartas en el local, confirmas con el despachador, pagas y el estado se actualiza como vendido. Si no completas el pago después de un tiempo, el apartado vence automáticamente.</p>
+                <p class="text-muted">Nuestro proceso es sencillo: al apartar un producto, el sistema te asigna un <strong>código único de 6 dígitos</strong>. Cuando llegues al local, debes mostrarlo al despachador para verificar tu reserva, confirmar el pago y actualizar el estado en el sistema.</p>
             </div>
         </div>
 
@@ -69,29 +71,29 @@
             <div class="col-md-6 col-xl-3">
                 <article class="process-card">
                     <span class="process-step">1</span>
-                    <h3>Aparta en el local</h3>
-                    <p>Visita el local ubicado en Calle 32 sur #68-65 y solicita el apartado con el despachador.</p>
+                    <h3>Genera tu código</h3>
+                    <p>Cuando realizas un apartado, recibes un código único de 6 dígitos para identificar tu reserva.</p>
                 </article>
             </div>
             <div class="col-md-6 col-xl-3">
                 <article class="process-card">
                     <span class="process-step">2</span>
-                    <h3>Confirmación del despachador</h3>
-                    <p>El despachador revisa el producto y confirma el apartado en el sistema del local.</p>
+                    <h3>Verificación en el local</h3>
+                    <p>Visita el local en Calle 32 sur #68-65 y muestra tu código al administrador o despachador.</p>
                 </article>
             </div>
             <div class="col-md-6 col-xl-3">
                 <article class="process-card">
                     <span class="process-step">3</span>
-                    <h3>Pago al despachador</h3>
-                    <p>Acércate al despachador para realizar el pago del producto reservado.</p>
+                    <h3>Pago del producto</h3>
+                    <p>Una vez validado el código, realizas el pago directamente al despachador del local.</p>
                 </article>
             </div>
             <div class="col-md-6 col-xl-3">
                 <article class="process-card">
                     <span class="process-step">4</span>
-                    <h3>Venta confirmada</h3>
-                    <p>Una vez pagado, el despachador marca el apartado como vendido y queda listo para entrega.</p>
+                    <h3>Entrega confirmada</h3>
+                    <p>El administrador marca el apartado como entregado o vendido en el sistema una vez verificado tu código.</p>
                 </article>
             </div>
         </div>
