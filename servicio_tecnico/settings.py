@@ -15,6 +15,7 @@ ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 # -------------------------
 
 INSTALLED_APPS = [
+    'jazzmin',
     'inventario',
 
     'django.contrib.admin',
@@ -28,6 +29,55 @@ INSTALLED_APPS = [
     'cloudinary',
     'cloudinary_storage',
 ]
+
+JAZZMIN_SETTINGS = {
+    'site_title': 'Servicio Técnico Admin',
+    'site_header': 'Servicio Técnico',
+    'site_brand': 'Panel Administrativo',
+    'site_logo': 'img/logo.png',
+    'login_logo': 'img/logo.png',
+    'site_icon': 'img/logo.png',
+    'welcome_sign': 'Bienvenido al panel administrativo de Servicio Técnico',
+    'copyright': 'Servicio Técnico',
+    'search_model': ['inventario.Producto', 'inventario.Categoria', 'inventario.Apartado', 'inventario.Usuario'],
+    'topmenu_links': [
+        {'name': 'Ver sitio', 'url': '/', 'new_window': True},
+        {'model': 'inventario.Producto'},
+        {'model': 'inventario.Apartado'},
+        {'app': 'inventario'},
+    ],
+    'show_sidebar': True,
+    'navigation_expanded': True,
+    'related_modal_active': True,
+    'changeform_format': 'horizontal_tabs',
+    'order_with_respect_to': ['inventario', 'auth'],
+    'icons': {
+        'auth': 'fas fa-users-cog',
+        'auth.Group': 'fas fa-user-shield',
+        'inventario.Usuario': 'fas fa-user-circle',
+        'inventario.Producto': 'fas fa-mobile-alt',
+        'inventario.Categoria': 'fas fa-layer-group',
+        'inventario.Apartado': 'fas fa-box-open',
+        'inventario.HeroBanner': 'fas fa-image',
+    },
+}
+
+JAZZMIN_UI_TWEAKS = {
+    'theme': 'flatly',
+    'dark_mode_theme': 'darkly',
+    'navbar': 'navbar-primary navbar-dark',
+    'accent': 'accent-info',
+    'sidebar': 'sidebar-dark-primary',
+    'brand_colour': 'navbar-primary',
+    'button_classes': {
+        'primary': 'btn-primary',
+        'secondary': 'btn-outline-secondary',
+        'info': 'btn-info',
+        'warning': 'btn-warning',
+        'danger': 'btn-danger',
+        'success': 'btn-success',
+    },
+}
 
 
 # -------------------------
@@ -137,13 +187,10 @@ USE_TZ = True
 # -------------------------
 
 STATIC_URL = '/static/'
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 WHITENOISE_USE_FINDERS = True
 
