@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mis Apartados | Servicio Técnico{% endblock %}
+
+{% block content %}
+<section class="py-6">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col">
+                <h2 class="section-title">Mis apartados</h2>
+                <p class="text-muted">Revisa el estado de los productos que apartaste. Solo tú puedes ver esta información.</p>
+            </div>
+        </div>
+
+        {% if apartados %}
+        <div class="table-responsive shadow-sm rounded-4 overflow-hidden">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for apartado in apartados %}
+                    <tr>
+                        <td>{{ apartado.producto.nombre }}</td>
+                        <td>{{ apartado.cantidad }}</td>
+                        <td>
+                            {% if apartado.estado == 'pendiente' %}
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                            {% elif apartado.estado == 'confirmado' %}
+                                <span class="badge bg-success">Confirmado</span>
+                            {% elif apartado.estado == 'cancelado' %}
+                                <span class="badge bg-danger">Cancelado</span>
+                            {% elif apartado.estado == 'expirado' %}
+                                <span class="badge bg-secondary">Expirado</span>
+                            {% elif apartado.estado == 'entregado' %}
+                                <span class="badge bg-info text-dark">Entregado</span>
+                            {% else %}
+                                <span class="badge bg-light text-dark">{{ apartado.estado|capfirst }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ apartado.fecha_apartado|date:"d M Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info rounded-4">No hay apartados registrados. Haz tu primer apartado en el catálogo.</div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
