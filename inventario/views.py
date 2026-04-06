@@ -81,3 +81,8 @@ def productos(request):
     ensure_initial_data()
     productos = Producto.objects.all()
     return render(request, 'productos.html', {'productos': productos})
+
+@login_required
+def mis_apartados(request):
+    apartados = Apartado.objects.filter(usuario=request.user).select_related('producto').order_by('-fecha_apartado')
+    return render(request, 'mis_apartados.html', {'apartados': apartados})
