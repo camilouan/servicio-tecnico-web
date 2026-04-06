@@ -78,6 +78,10 @@
     </div>
 </nav>
 
+{% if user.is_authenticated %}
+<div id="apartadoToastContainer" class="apartado-toast-container"></div>
+{% endif %}
+
 <main>
     {% if messages %}
     <div class="container py-3">
@@ -189,6 +193,101 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% if user.is_authenticated %}
+<script>
+(function () {
+    const endpoint = "{% url 'estado_apartados_api' %}";
+    const container = document.getElementById('apartadoToastContainer');
+    if (!container) return;
+
+    const statusClasses = {
+        pendiente: 'status-pendiente',
+        confirmado: 'status-confirmado',
+        cancelado: 'status-cancelado',
+        expirado: 'status-expirado',
+        entregado: 'status-entregado'
+    };
+
+    let lastSnapshot = null;
+    const sessionKey = `apartados_initial_seen_{{ user.id }}`;
+
+    function buildSnapshot(apartados) {
+        return JSON.stringify(apartados.map(item => ({ id: item.id, estado: item.estado, cantidad: item.cantidad })));
+    }
+
+    function showToast(apartado, isUpdate = false) {
+        const toast = document.createElement('div');
+        const statusClass = statusClasses[apartado.estado] || 'status-default';
+        const title = isUpdate ? 'Estado actualizado' : 'Estado de tu apartado';
+        const description = isUpdate
+            ? `Tu apartado de ${apartado.producto} cambió a ${apartado.estado_display}.`
+            : `Tu apartado de ${apartado.producto} está en estado ${apartado.estado_display}.`;
+
+        toast.className = `apartado-toast ${statusClass}`;
+        toast.innerHTML = `
+            <button type="button" class="apartado-toast-close" aria-label="Cerrar">&times;</button>
+            <div class="apartado-toast-icon"><i class="fas fa-box-open"></i></div>
+            <div class="apartado-toast-content">
+                <div class="apartado-toast-label">${title}</div>
+                <h6 class="apartado-toast-title">${apartado.producto}</h6>
+                <p class="apartado-toast-text">${description}</p>
+                <small class="apartado-toast-meta">Cantidad: ${apartado.cantidad} · Registrado: ${apartado.fecha_apartado}</small>
+            </div>
+        `;
+
+        const closeButton = toast.querySelector('.apartado-toast-close');
+        closeButton.addEventListener('click', () => toast.remove());
+
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.add('is-visible');
+        }, 30);
+
+        setTimeout(() => {
+            toast.classList.remove('is-visible');
+            setTimeout(() => toast.remove(), 250);
+        }, 9000);
+    }
+
+    async function checkApartados() {
+        try {
+            const response = await fetch(endpoint, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin'
+            });
+
+            if (!response.ok) return;
+
+            const data = await response.json();
+            const apartados = data.apartados || [];
+            const newSnapshot = buildSnapshot(apartados);
+
+            if (!sessionStorage.getItem(sessionKey) && apartados.length) {
+                apartados.slice(0, 2).forEach(item => showToast(item, false));
+                sessionStorage.setItem(sessionKey, '1');
+            }
+
+            if (lastSnapshot && lastSnapshot !== newSnapshot) {
+                const previous = JSON.parse(lastSnapshot);
+                apartados.forEach(item => {
+                    const oldItem = previous.find(prev => prev.id === item.id);
+                    if (!oldItem || oldItem.estado !== item.estado || oldItem.cantidad !== item.cantidad) {
+                        showToast(item, true);
+                    }
+                });
+            }
+
+            lastSnapshot = newSnapshot;
+        } catch (error) {
+            console.warn('No se pudo verificar el estado de apartados.', error);
+        }
+    }
+
+    checkApartados();
+    setInterval(checkApartados, 15000);
+})();
+</script>
+{% endif %}
 {% block extra_js %}{% endblock %}
 </body>
 </html>

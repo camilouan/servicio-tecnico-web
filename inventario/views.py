@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, update_session_auth_hash
@@ -137,6 +138,29 @@ def productos(request):
 def mis_apartados(request):
     apartados = Apartado.objects.filter(usuario=request.user).select_related('producto').order_by('-fecha_apartado')
     return render(request, 'mis_apartados.html', {'apartados': apartados})
+
+
+@login_required
+def estado_apartados_api(request):
+    apartados = (
+        Apartado.objects.filter(usuario=request.user)
+        .select_related('producto')
+        .order_by('-fecha_apartado')[:6]
+    )
+
+    data = [
+        {
+            'id': apartado.id,
+            'producto': apartado.producto.nombre,
+            'cantidad': apartado.cantidad,
+            'estado': apartado.estado,
+            'estado_display': apartado.get_estado_display(),
+            'fecha_apartado': timezone.localtime(apartado.fecha_apartado).strftime('%d/%m/%Y %H:%M'),
+        }
+        for apartado in apartados
+    ]
+
+    return JsonResponse({'apartados': data})
 
 
 @login_required
