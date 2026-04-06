@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from .models import Producto, Apartado, Categoria, HeroBanner
 from .forms import RegistroForm, PerfilUsuarioForm, CambioPasswordSemanalForm, EliminarCuentaForm
@@ -13,6 +14,7 @@ from .initial_data import ensure_initial_data
 
 def home(request):
     ensure_initial_data()
+    Apartado.actualizar_apartados_vencidos()
     productos = Producto.objects.all()
     return render(request, 'home.html', {'productos': productos})
 
@@ -55,6 +57,7 @@ def logout_view(request):
 
 @login_required
 def apartar_producto(request, producto_id):
+    Apartado.actualizar_apartados_vencidos()
     producto = get_object_or_404(Producto, id=producto_id)
 
     try:
@@ -95,16 +98,16 @@ def apartar_producto(request, producto_id):
         return redirect('productos')
 
     if producto.stock_disponible >= cantidad:
-        Apartado.objects.create(
-            usuario=request.user,
-            producto=producto,
-            cantidad=cantidad,
-            fecha_expiracion=timezone.now() + timezone.timedelta(hours=24)
-        )
-
-        producto.stock_disponible -= cantidad
-        producto.save()
-        messages.success(request, f'Se apartaron correctamente {cantidad} unidad(es) de {producto.nombre}.')
+        try:
+            Apartado.objects.create(
+                usuario=request.user,
+                producto=producto,
+                cantidad=cantidad,
+                fecha_expiracion=timezone.now() + timezone.timedelta(hours=24)
+            )
+            messages.success(request, f'Se apartaron correctamente {cantidad} unidad(es) de {producto.nombre}.')
+        except ValidationError as error:
+            messages.error(request, error.messages[0] if getattr(error, 'messages', None) else 'No hay suficiente stock disponible para completar el apartado.')
     else:
         messages.error(request, 'No hay suficiente stock disponible para completar el apartado.')
 
@@ -112,6 +115,7 @@ def apartar_producto(request, producto_id):
 
 def landing(request):
     ensure_initial_data()
+    Apartado.actualizar_apartados_vencidos()
     categorias = Categoria.objects.filter(activa=True)
     hero = HeroBanner.objects.filter(activo=True).order_by('-orden', '-fecha_actualizacion').first()
     return render(request, 'landing.html', {'categorias': categorias, 'hero': hero})
@@ -119,6 +123,7 @@ def landing(request):
 
 def productos(request):
     ensure_initial_data()
+    Apartado.actualizar_apartados_vencidos()
     categoria_seleccionada = request.GET.get('categoria', '').strip()
     disponibilidad = request.GET.get('disponibilidad', '').strip()
     orden = request.GET.get('orden', '').strip()
@@ -174,6 +179,7 @@ def productos(request):
 
 @login_required
 def mis_apartados(request):
+    Apartado.actualizar_apartados_vencidos()
     apartados = Apartado.objects.filter(usuario=request.user).select_related('producto').order_by('-fecha_apartado')
 
     estados_activos = ['pendiente', 'confirmado']
@@ -196,6 +202,7 @@ def mis_apartados(request):
 
 @login_required
 def estado_apartados_api(request):
+    Apartado.actualizar_apartados_vencidos()
     apartados = (
         Apartado.objects.filter(usuario=request.user)
         .select_related('producto')
@@ -219,6 +226,7 @@ def estado_apartados_api(request):
 
 @staff_member_required
 def admin_apartados_resumen_api(request):
+    Apartado.actualizar_apartados_vencidos()
     estados_visibles = ['pendiente', 'confirmado']
     recientes = (
         Apartado.objects.filter(estado__in=estados_visibles)
