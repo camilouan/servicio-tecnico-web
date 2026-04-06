@@ -99,6 +99,14 @@ def logout_view(request):
     return redirect('landing')  # landing es página inicial pública
 
 
+def politica_privacidad(request):
+    return render(request, 'politica_privacidad.html')
+
+
+def terminos_servicio(request):
+    return render(request, 'terminos_servicio.html')
+
+
 @login_required
 def apartar_producto(request, producto_id):
     Apartado.actualizar_apartados_vencidos()
