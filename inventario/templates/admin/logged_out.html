@@ -1,0 +1,25 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div class="admin-logout-panel">
+  <h2>Sesión cerrada correctamente</h2>
+  <p>Has salido del panel administrativo de forma segura. Puedes volver al sitio principal o iniciar sesión nuevamente.</p>
+
+  <div>
+    <a href="/" class="admin-back-home">
+      <span>←</span>
+      <span>Ir a la página principal</span>
+    </a>
+  </div>
+
+  <div>
+    <a href="{% url 'admin:login' %}" class="admin-login-again">
+      <span>🔐</span>
+      <span>Volver a iniciar sesión</span>
+    </a>
+  </div>
+</div>
+{% endblock %}
