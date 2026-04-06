@@ -20,6 +20,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('mis-apartados/', views.mis_apartados, name='mis_apartados'),
     path('mis-apartados/estado/', views.estado_apartados_api, name='estado_apartados_api'),
+    path('panel-admin/apartados/resumen/', views.admin_apartados_resumen_api, name='admin_apartados_resumen_api'),
     path('mi-perfil/', views.mi_perfil, name='mi_perfil'),
 
 ]
