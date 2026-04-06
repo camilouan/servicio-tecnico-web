@@ -3,11 +3,21 @@ from datetime import timedelta
 from django import forms
 from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 
 from .models import Usuario
 
 
 class RegistroForm(UserCreationForm):
+    acepta_politicas = forms.BooleanField(
+        required=True,
+        label=mark_safe(
+            'He leído y acepto la <a href="/politica-privacidad/" target="_blank" rel="noopener noreferrer">Política de Privacidad</a> y los <a href="/terminos-servicio/" target="_blank" rel="noopener noreferrer">Términos de Servicio</a>.'
+        ),
+        error_messages={
+            'required': 'Debes aceptar la Política de Privacidad y los Términos de Servicio para crear tu cuenta.',
+        },
+    )
 
     class Meta:
         model = Usuario
@@ -26,11 +36,33 @@ class RegistroForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.order_fields([
+            'username',
+            'email',
+            'nombres',
+            'apellidos',
+            'telefono',
+            'documento_identidad',
+            'direccion',
+            'ciudad',
+            'password1',
+            'password2',
+            'acepta_politicas',
+        ])
 
-        for field in self.fields.values():
-            field.widget.attrs.update({
-                'class': 'form-control'
-            })
+        for name, field in self.fields.items():
+            if field.widget.input_type == 'checkbox':
+                field.widget.attrs.update({'class': 'form-check-input'})
+            else:
+                field.widget.attrs.update({'class': 'form-control'})
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.acepta_politicas = True
+        user.fecha_aceptacion_politicas = timezone.now()
+        if commit:
+            user.save()
+        return user
 
 
 class PerfilUsuarioForm(forms.ModelForm):

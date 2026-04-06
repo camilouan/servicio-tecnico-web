@@ -978,6 +978,94 @@ main {
   50% { transform: translateY(-20px) rotate(180deg); }
 }
 
+.legal-consent-banner {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1090;
+}
+
+.legal-consent-banner[hidden] {
+  display: none !important;
+}
+
+.legal-consent-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 1.2rem;
+  background: rgba(15, 23, 42, 0.96);
+  color: #e2e8f0;
+  border: 1px solid rgba(96, 165, 250, 0.18);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.22);
+  backdrop-filter: blur(12px);
+}
+
+.legal-consent-text {
+  flex: 1;
+}
+
+.legal-consent-text strong {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  color: #ffffff;
+}
+
+.legal-consent-text p {
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.legal-consent-text a {
+  color: #93c5fd;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.legal-consent-text a:hover {
+  color: #ffffff;
+}
+
+.legal-consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.legal-acceptance-check {
+  border: 1px solid rgba(59, 130, 246, 0.14);
+  background: linear-gradient(135deg, #f8fbff, #eef5ff);
+}
+
+.legal-acceptance-check .form-check-input {
+  margin-top: 0.2rem;
+}
+
+.legal-acceptance-check .form-check-label {
+  color: #334155;
+  line-height: 1.6;
+}
+
+.legal-acceptance-check a {
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .legal-consent-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .legal-consent-actions {
+    width: 100%;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .footer {
