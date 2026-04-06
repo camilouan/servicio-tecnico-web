@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils import timezone
 from .models import Producto, Apartado, Categoria, HeroBanner
-from .forms import RegistroForm
+from .forms import RegistroForm, PerfilUsuarioForm, CambioPasswordSemanalForm, EliminarCuentaForm
 from .initial_data import ensure_initial_data
 
 
@@ -86,3 +87,65 @@ def productos(request):
 def mis_apartados(request):
     apartados = Apartado.objects.filter(usuario=request.user).select_related('producto').order_by('-fecha_apartado')
     return render(request, 'mis_apartados.html', {'apartados': apartados})
+
+
+@login_required
+def mi_perfil(request):
+    usuario = request.user
+
+    if request.method == 'POST':
+        accion = request.POST.get('accion')
+
+        if accion == 'actualizar_perfil':
+            perfil_form = PerfilUsuarioForm(request.POST, request.FILES, instance=usuario)
+            password_form = CambioPasswordSemanalForm(usuario)
+            eliminar_form = EliminarCuentaForm()
+
+            if perfil_form.is_valid():
+                perfil_form.save()
+                messages.success(request, 'Tu perfil fue actualizado correctamente.')
+                return redirect('mi_perfil')
+
+        elif accion == 'cambiar_password':
+            perfil_form = PerfilUsuarioForm(instance=usuario)
+            password_form = CambioPasswordSemanalForm(usuario, request.POST)
+            eliminar_form = EliminarCuentaForm()
+
+            if password_form.is_valid():
+                usuario = password_form.save()
+                usuario.ultima_actualizacion_password = timezone.now()
+                usuario.save(update_fields=['ultima_actualizacion_password'])
+                update_session_auth_hash(request, usuario)
+                messages.success(request, 'Tu contraseña se cambió correctamente.')
+                return redirect('mi_perfil')
+
+        elif accion == 'eliminar_cuenta':
+            perfil_form = PerfilUsuarioForm(instance=usuario)
+            password_form = CambioPasswordSemanalForm(usuario)
+            eliminar_form = EliminarCuentaForm(request.POST)
+
+            if eliminar_form.is_valid():
+                if not usuario.check_password(eliminar_form.cleaned_data['password_actual']):
+                    eliminar_form.add_error('password_actual', 'La contraseña actual no es correcta.')
+                else:
+                    logout(request)
+                    usuario.delete()
+                    return redirect('landing')
+        else:
+            perfil_form = PerfilUsuarioForm(instance=usuario)
+            password_form = CambioPasswordSemanalForm(usuario)
+            eliminar_form = EliminarCuentaForm()
+    else:
+        perfil_form = PerfilUsuarioForm(instance=usuario)
+        password_form = CambioPasswordSemanalForm(usuario)
+        eliminar_form = EliminarCuentaForm()
+
+    return render(
+        request,
+        'mi_perfil.html',
+        {
+            'perfil_form': perfil_form,
+            'password_form': password_form,
+            'eliminar_form': eliminar_form,
+        },
+    )

@@ -18,12 +18,25 @@ class Usuario(AbstractUser):
     documento_identidad = models.CharField(max_length=20)
     direccion = models.CharField(max_length=150)
     ciudad = models.CharField(max_length=100)
+    foto_perfil = CloudinaryField('foto de perfil', blank=True, null=True)
 
     rol = models.CharField(max_length=20, choices=ROLES, default='cliente')
 
     fecha_registro = models.DateTimeField(default=timezone.now)
+    ultima_actualizacion_password = models.DateTimeField(blank=True, null=True)
 
     activo = models.BooleanField(default=True)
+
+    @property
+    def foto_perfil_url(self):
+        if self.foto_perfil:
+            try:
+                url = getattr(self.foto_perfil, 'url', None)
+                if url:
+                    return url
+            except Exception:
+                pass
+        return None
 
     def __str__(self):
         return self.username
