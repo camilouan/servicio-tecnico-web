@@ -25,7 +25,7 @@ class Usuario(AbstractUser):
 
     rol = models.CharField(max_length=20, choices=ROLES, default='cliente')
 
-    fecha_registro = models.DateTimeField(default=timezone.now)
+    fecha_registro = models.DateTimeField(auto_now_add=True)
     ultima_actualizacion_password = models.DateTimeField(blank=True, null=True)
 
     activo = models.BooleanField(default=True)
@@ -137,7 +137,7 @@ class Producto(models.Model):
     # 👇 Imagen almacenada en Cloudinary
     imagen = CloudinaryField('imagen', blank=True, null=True)
 
-    fecha_creacion = models.DateTimeField(default=timezone.now)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     activo = models.BooleanField(default=True)
 
@@ -271,7 +271,7 @@ class Apartado(models.Model):
 
     codigo_verificacion = models.CharField(max_length=6, unique=True, blank=True, null=True)
 
-    fecha_apartado = models.DateTimeField(default=timezone.now)
+    fecha_apartado = models.DateTimeField(auto_now_add=True)
 
     fecha_expiracion = models.DateTimeField()
 
