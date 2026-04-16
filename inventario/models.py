@@ -84,6 +84,35 @@ class Categoria(models.Model):
                 return False
         return False
 
+    def clean(self):
+        errors = {}
+        
+        # Validar que el precio no sea negativo
+        if self.precio < 0:
+            errors['precio'] = 'El precio no puede ser negativo.'
+        
+        # Validar que el stock total no sea negativo
+        if self.stock_total < 0:
+            errors['stock_total'] = 'El stock total no puede ser negativo.'
+        
+        # Validar que el stock disponible no sea negativo
+        if self.stock_disponible < 0:
+            errors['stock_disponible'] = 'El stock disponible no puede ser negativo.'
+        
+        # Validar que el stock disponible no sea mayor al stock total
+        if self.stock_disponible > self.stock_total:
+            errors['stock_disponible'] = 'El stock disponible no puede ser mayor al stock total.'
+        
+        if errors:
+            from django.core.exceptions import ValidationError
+            raise ValidationError(errors)
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Ejecuta validaciones antes de guardar
+        super().save(*args, **kwargs)
+
+
+
     def __str__(self):
         return self.nombre
 
@@ -156,6 +185,35 @@ class Producto(models.Model):
             except Exception:
                 return False
         return False
+
+    def clean(self):
+        errors = {}
+        
+        # Validar que el precio no sea negativo
+        if self.precio < 0:
+            errors['precio'] = 'El precio no puede ser negativo.'
+        
+        # Validar que el stock total no sea negativo
+        if self.stock_total < 0:
+            errors['stock_total'] = 'El stock total no puede ser negativo.'
+        
+        # Validar que el stock disponible no sea negativo
+        if self.stock_disponible < 0:
+            errors['stock_disponible'] = 'El stock disponible no puede ser negativo.'
+        
+        # Validar que el stock disponible no sea mayor al stock total
+        if self.stock_disponible > self.stock_total:
+            errors['stock_disponible'] = 'El stock disponible no puede ser mayor al stock total.'
+        
+        if errors:
+            from django.core.exceptions import ValidationError
+            raise ValidationError(errors)
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Ejecuta validaciones antes de guardar
+        super().save(*args, **kwargs)
+
+
 
     def __str__(self):
         return self.nombre
