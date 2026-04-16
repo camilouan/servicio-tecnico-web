@@ -336,6 +336,15 @@ class Apartado(models.Model):
         if self.pk:
             previo = Apartado.objects.filter(pk=self.pk).first()
 
+        # Lógica para confirmación automática
+        if previo and previo.estado != 'confirmado' and self.estado == 'confirmado':
+            self.fecha_confirmacion = timezone.now()
+            # El confirmado_por se establecerá desde el admin
+        elif self.estado != 'confirmado':
+            # Si ya no está confirmado, limpiar los campos de confirmación
+            self.fecha_confirmacion = None
+            self.confirmado_por = None
+
         with transaction.atomic():
             if previo is None:
                 consumo_nuevo = self._cantidad_reservada_para_estado(self.estado)
