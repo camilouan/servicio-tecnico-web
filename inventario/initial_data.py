@@ -1,4 +1,5 @@
 import cloudinary.uploader
+import os
 from django.conf import settings
 from django.utils.text import slugify
 
@@ -36,6 +37,10 @@ PRODUCT_IMAGES = {
 
 
 def upload_remote_image(source_url, public_id):
+    # Evita llamadas de red durante la carga de páginas en producción.
+    if os.environ.get('SEED_UPLOAD_REMOTE_IMAGES', 'False') != 'True':
+        return None
+
     if not settings.CLOUDINARY_STORAGE.get('CLOUD_NAME'):
         return None
 

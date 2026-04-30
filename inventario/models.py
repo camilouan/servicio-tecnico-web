@@ -86,25 +86,14 @@ class Categoria(models.Model):
 
     def clean(self):
         errors = {}
-        
-        # Validar que el precio no sea negativo
-        if self.precio < 0:
-            errors['precio'] = 'El precio no puede ser negativo.'
-        
-        # Validar que el stock total no sea negativo
-        if self.stock_total < 0:
-            errors['stock_total'] = 'El stock total no puede ser negativo.'
-        
-        # Validar que el stock disponible no sea negativo
-        if self.stock_disponible < 0:
-            errors['stock_disponible'] = 'El stock disponible no puede ser negativo.'
-        
-        # Validar que el stock disponible no sea mayor al stock total
-        if self.stock_disponible > self.stock_total:
-            errors['stock_disponible'] = 'El stock disponible no puede ser mayor al stock total.'
-        
+
+        if not self.nombre or not self.nombre.strip():
+            errors['nombre'] = 'El nombre de la categoría es obligatorio.'
+
+        if not self.descripcion or not self.descripcion.strip():
+            errors['descripcion'] = 'La descripción de la categoría es obligatoria.'
+
         if errors:
-            from django.core.exceptions import ValidationError
             raise ValidationError(errors)
     
     def save(self, *args, **kwargs):
