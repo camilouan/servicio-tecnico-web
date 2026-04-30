@@ -151,6 +151,12 @@ Algunas notas importantes:
   aún depende de él.
 - No olvide definir otras variables (`SECRET_KEY`, `ALLOWED_HOSTS`, etc.)
   mediante el panel de configuraciones.
+- Para acelerar despliegues, el `build.sh` ahora deja **opcionales** dos tareas
+   costosas: seed y creación de superusuario.
+   Solo actívelas cuando realmente las necesite con estas variables de entorno:
+   - `RUN_SEED_ON_BUILD=True`
+   - `RUN_CREATESU_ON_BUILD=True`
+   Si no están en `True`, Render las omite y el build termina más rápido.
 
 
 
