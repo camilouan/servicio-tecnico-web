@@ -11,12 +11,9 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from .models import Producto, Apartado, Categoria, HeroBanner
 from .forms import RegistroForm, PerfilUsuarioForm, CambioPasswordSemanalForm, EliminarCuentaForm
-from .initial_data import ensure_initial_data
 
 
 def home(request):
-    ensure_initial_data()
-    Apartado.actualizar_apartados_vencidos()
     productos = Producto.objects.all()
     return render(request, 'home.html', {'productos': productos})
 
@@ -166,16 +163,12 @@ def apartar_producto(request, producto_id):
     return redirect('productos')
 
 def landing(request):
-    ensure_initial_data()
-    Apartado.actualizar_apartados_vencidos()
     categorias = Categoria.objects.filter(activa=True)
     hero = HeroBanner.objects.filter(activo=True).order_by('-orden', '-fecha_actualizacion').first()
     return render(request, 'landing.html', {'categorias': categorias, 'hero': hero})
 
 
 def productos(request):
-    ensure_initial_data()
-    Apartado.actualizar_apartados_vencidos()
     categoria_seleccionada = request.GET.get('categoria', '').strip()
     disponibilidad = request.GET.get('disponibilidad', '').strip()
     orden = request.GET.get('orden', '').strip()

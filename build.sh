@@ -7,6 +7,9 @@ pip install -r requirements.txt
 echo "Running migrations..."
 python manage.py migrate
 
+echo "Seeding initial data..."
+python manage.py seed
+
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
