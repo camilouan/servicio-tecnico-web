@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.cache import cache
+from django.db import connection
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
@@ -16,6 +17,21 @@ from .forms import RegistroForm, PerfilUsuarioForm, CambioPasswordSemanalForm, E
 def home(request):
     productos = Producto.objects.all()
     return render(request, 'home.html', {'productos': productos})
+
+
+def healthz(request):
+    return JsonResponse({'status': 'ok'}, status=200)
+
+
+def readyz(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT 1')
+            cursor.fetchone()
+    except Exception as exc:
+        return JsonResponse({'status': 'error', 'detail': str(exc)}, status=503)
+
+    return JsonResponse({'status': 'ready'}, status=200)
 
 
 def registro(request):
@@ -106,7 +122,7 @@ def terminos_servicio(request):
 
 @login_required
 def apartar_producto(request, producto_id):
-    Apartado.actualizar_apartados_vencidos()
+    Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
     producto = get_object_or_404(Producto, id=producto_id)
 
     try:
@@ -224,7 +240,7 @@ def productos(request):
 
 @login_required
 def mis_apartados(request):
-    Apartado.actualizar_apartados_vencidos()
+    Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
     apartados = Apartado.objects.filter(usuario=request.user).select_related('producto').order_by('-fecha_apartado')
 
     estados_activos = ['pendiente', 'confirmado']
@@ -247,7 +263,7 @@ def mis_apartados(request):
 
 @login_required
 def estado_apartados_api(request):
-    Apartado.actualizar_apartados_vencidos()
+    Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
     apartados = (
         Apartado.objects.filter(usuario=request.user)
         .select_related('producto')
@@ -271,7 +287,7 @@ def estado_apartados_api(request):
 
 @staff_member_required
 def admin_apartados_resumen_api(request):
-    Apartado.actualizar_apartados_vencidos()
+    Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
     estados_visibles = ['pendiente', 'confirmado']
     recientes = (
         Apartado.objects.filter(estado__in=estados_visibles)

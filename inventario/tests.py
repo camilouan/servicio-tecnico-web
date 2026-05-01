@@ -83,6 +83,21 @@ class ApartadoStockAutomationTests(BaseInventarioTestCase):
         self.assertEqual(apartado.estado, 'expirado')
         self.assertEqual(self.producto.stock_disponible, 10)
 
+    def test_expiracion_throttled_evita_ejecuciones_repetidas(self):
+        Apartado.objects.create(
+            usuario=self.usuario,
+            producto=self.producto,
+            cantidad=1,
+            estado='pendiente',
+            fecha_expiracion=timezone.now() - timezone.timedelta(hours=2),
+        )
+
+        primero = Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
+        segundo = Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
+
+        self.assertEqual(primero, 1)
+        self.assertEqual(segundo, 0)
+
 
 class LoginSecurityTests(BaseInventarioTestCase):
     @override_settings(
@@ -156,3 +171,15 @@ class LegalAcceptanceTests(BaseInventarioTestCase):
         response = self.client.get(reverse('landing'))
         self.assertContains(response, 'Al continuar navegando en esta plataforma')
         self.assertContains(response, 'legalConsentBanner')
+
+
+class HealthChecksTests(TestCase):
+    def test_healthz_responde_ok(self):
+        response = self.client.get(reverse('healthz'))
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {'status': 'ok'})
+
+    def test_readyz_responde_ready(self):
+        response = self.client.get(reverse('readyz'))
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {'status': 'ready'})

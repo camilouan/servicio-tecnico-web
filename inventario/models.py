@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.utils.text import slugify
 from cloudinary.models import CloudinaryField
+from django.core.cache import cache
 
 
 class Usuario(AbstractUser):
@@ -278,6 +279,13 @@ class Apartado(models.Model):
         related_name='apartados_confirmados'
     )
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['estado', 'fecha_expiracion']),
+            models.Index(fields=['estado', 'fecha_apartado']),
+            models.Index(fields=['usuario', 'fecha_apartado']),
+        ]
+
     @classmethod
     def actualizar_apartados_vencidos(cls):
         motivo_expirado = 'Apartado expirado automáticamente por superar el tiempo límite.'
@@ -311,6 +319,12 @@ class Apartado(models.Model):
             vencidos.update(estado='expirado')
 
             return total_actualizados
+
+    @classmethod
+    def actualizar_apartados_vencidos_si_corresponde(cls, throttle_seconds=60):
+        if cache.add('apartados:expiracion:global_lock', '1', timeout=throttle_seconds):
+            return cls.actualizar_apartados_vencidos()
+        return 0
 
     def generar_codigo_verificacion(self):
         while True:

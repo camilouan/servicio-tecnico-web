@@ -4,6 +4,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
 
+    path('healthz/', views.healthz, name='healthz'),
+    path('readyz/', views.readyz, name='readyz'),
+
     path('', views.landing, name='landing'),
 
     # vista original de productos disponible en /home/ para mantener compatibilidad

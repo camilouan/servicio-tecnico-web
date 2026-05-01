@@ -131,6 +131,9 @@ WSGI_APPLICATION = 'servicio_tecnico.wsgi.application'
 # -------------------------
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
+DB_CONN_MAX_AGE = int(os.environ.get('DB_CONN_MAX_AGE', '60'))
+DB_CONNECT_TIMEOUT = int(os.environ.get('DB_CONNECT_TIMEOUT', '5'))
+DB_STATEMENT_TIMEOUT_MS = int(os.environ.get('DB_STATEMENT_TIMEOUT_MS', '20000'))
 
 if DATABASE_URL:
     import urllib.parse
@@ -143,6 +146,12 @@ if DATABASE_URL:
             'PASSWORD': parsed_url.password,
             'HOST': parsed_url.hostname,
             'PORT': parsed_url.port or '',
+            'CONN_MAX_AGE': DB_CONN_MAX_AGE,
+            'CONN_HEALTH_CHECKS': True,
+            'OPTIONS': {
+                'connect_timeout': DB_CONNECT_TIMEOUT,
+                'options': f'-c statement_timeout={DB_STATEMENT_TIMEOUT_MS}',
+            },
         }
     }
 else:
@@ -150,8 +159,17 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
+            'CONN_MAX_AGE': DB_CONN_MAX_AGE,
         }
     }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'servicio-tecnico-cache',
+        'TIMEOUT': 300,
+    }
+}
 
 
 # -------------------------

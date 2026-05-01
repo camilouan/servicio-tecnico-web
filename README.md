@@ -161,6 +161,13 @@ Algunas notas importantes:
    evitar que una request lenta bloquee toda la app:
    - `WEB_CONCURRENCY` (por defecto `2`)
    - `GUNICORN_THREADS` (por defecto `2`)
+- El despliegue define `healthCheckPath: /healthz/` para que Render valide una
+   ruta liviana en lugar de depender de vistas pesadas de negocio.
+- Para estabilidad de conexión a PostgreSQL en producción también se pueden
+   ajustar estas variables de entorno:
+   - `DB_CONN_MAX_AGE` (por defecto `60`)
+   - `DB_CONNECT_TIMEOUT` (por defecto `5` segundos)
+   - `DB_STATEMENT_TIMEOUT_MS` (por defecto `20000`)
 
 
 

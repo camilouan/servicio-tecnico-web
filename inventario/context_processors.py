@@ -1,5 +1,4 @@
 from django.utils import timezone
-from django.core.cache import cache
 
 from .models import Apartado
 
@@ -13,9 +12,7 @@ def admin_apartados_popup(request):
     if not request.path.startswith('/admin'):
         return {'admin_popup_summary': None}
 
-    # Evita ejecutar la expiración en cada request al admin y reduce bloqueo de BD.
-    if cache.add('apartados:expiracion:admin_lock', '1', timeout=60):
-        Apartado.actualizar_apartados_vencidos()
+    Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
 
     estados_visibles = ['pendiente', 'confirmado']
     recientes_qs = (
