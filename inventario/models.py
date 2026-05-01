@@ -280,20 +280,37 @@ class Apartado(models.Model):
 
     @classmethod
     def actualizar_apartados_vencidos(cls):
-        vencidos = cls.objects.filter(
-            estado='pendiente',
-            fecha_expiracion__lt=timezone.now(),
-        )
+        motivo_expirado = 'Apartado expirado automáticamente por superar el tiempo límite.'
 
-        total_actualizados = 0
-        for apartado in vencidos:
-            apartado.estado = 'expirado'
-            if not apartado.motivo_cancelacion:
-                apartado.motivo_cancelacion = 'Apartado expirado automáticamente por superar el tiempo límite.'
-            apartado.save(update_fields=['estado', 'motivo_cancelacion'])
-            total_actualizados += 1
+        with transaction.atomic():
+            vencidos = (
+                cls.objects.select_for_update()
+                .filter(
+                    estado='pendiente',
+                    fecha_expiracion__lt=timezone.now(),
+                )
+            )
 
-        return total_actualizados
+            total_actualizados = vencidos.count()
+            if total_actualizados == 0:
+                return 0
+
+            cantidades_por_producto = vencidos.values('producto_id').annotate(
+                total=models.Sum('cantidad')
+            )
+
+            for item in cantidades_por_producto:
+                Producto.objects.select_for_update().filter(pk=item['producto_id']).update(
+                    stock_disponible=models.F('stock_disponible') + item['total']
+                )
+
+            vencidos.filter(
+                models.Q(motivo_cancelacion__isnull=True) | models.Q(motivo_cancelacion='')
+            ).update(motivo_cancelacion=motivo_expirado)
+
+            vencidos.update(estado='expirado')
+
+            return total_actualizados
 
     def generar_codigo_verificacion(self):
         while True:

@@ -157,6 +157,10 @@ Algunas notas importantes:
    - `RUN_SEED_ON_BUILD=True`
    - `RUN_CREATESU_ON_BUILD=True`
    Si no están en `True`, Render las omite y el build termina más rápido.
+- El `startCommand` en Render usa Gunicorn con concurrencia configurable para
+   evitar que una request lenta bloquee toda la app:
+   - `WEB_CONCURRENCY` (por defecto `2`)
+   - `GUNICORN_THREADS` (por defecto `2`)
 
 
 
