@@ -175,7 +175,7 @@ Algunas notas importantes:
 
 ##  Datos de Prueba
 
-Los productos pueden cargarse desde el panel administrador o mediante el shell de Django usando el ORM.
+Los productos pueden cargarse desde el panel administrador o mediante el shell de Django usando el ORM en una terminal local. En Render Free no hay shell interactivo.
 
 ---
 

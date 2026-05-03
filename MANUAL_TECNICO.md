@@ -445,13 +445,20 @@ curl https://servicio-tecnico.onrender.com/readyz/
 
 Una sola vez después del primer deploy:
 
-1. En Render Dashboard → Web Service → Shell
-2. Ejecutar:
-   ```bash
-   python manage.py createsu
-   # O con parámetro de env:
-   RUN_CREATESU_ON_BUILD=True python manage.py migrate
-   ```
+1. En plan gratuito de Render no se dispone de shell interactivo. Para crear el
+primer superusuario en producción, use una ejecución puntual del build con la
+variable de entorno habilitada:
+
+2. En Render Dashboard → Web Service → Environment
+3. Definir temporalmente:
+  ```bash
+  RUN_CREATESU_ON_BUILD=True
+  ```
+4. Hacer deploy
+5. Verificar que el usuario admin fue creado
+6. Volver a dejar la variable en `False` para los siguientes despliegues
+
+Si el usuario ya existe, el comando no lo duplica.
 
 ---
 
@@ -539,7 +546,7 @@ El usuario ya no podrá iniciar sesión.
 ### Ver Intentos de Login Fallidos
 
 ```bash
-# Desde SSH en Render
+# Desde una terminal local con acceso al proyecto
 python manage.py shell
 >>> from django.core.cache import cache
 >>> cache.get('login_security:username:ip:lock')
@@ -638,7 +645,7 @@ python manage.py dumpdata > backup_$(date +%Y%m%d_%H%M%S).json
 **Resultado**:
 ```json
 [
-  {
+# Desde una terminal local con acceso al proyecto
     "model": "inventario.usuario",
     "pk": 1,
     "fields": {"username": "admin", ...}

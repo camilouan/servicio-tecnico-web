@@ -32,6 +32,11 @@ git push origin main
 # Monitorear en: Render Dashboard → Logs
 ```
 
+**Importante:** en el plan gratuito de Render no hay shell interactivo. Si
+necesitas crear el primer superusuario en producción, activa temporalmente
+`RUN_CREATESU_ON_BUILD=True` en las variables de entorno, despliega una vez y
+luego vuelve a dejarlo en `False`.
+
 ---
 
 ## 🔑 CREDENCIALES DE ACCESO
@@ -58,7 +63,7 @@ python manage.py createsuperuser
 python manage.py seed
 ```
 
-### Ver Usuarios en BD
+### Ver Usuarios en BD (entorno local o terminal autorizada)
 
 ```bash
 python manage.py shell
@@ -67,7 +72,7 @@ python manage.py shell
 >>> Usuario.objects.filter(rol='cliente').count()
 ```
 
-### Resetear Contraseña de Usuario
+### Resetear Contraseña de Usuario (entorno local o terminal autorizada)
 
 ```bash
 python manage.py shell
@@ -77,7 +82,7 @@ python manage.py shell
 >>> u.save()
 ```
 
-### Bloquear/Desbloquear Usuario
+### Bloquear/Desbloquear Usuario (entorno local o terminal autorizada)
 
 ```bash
 python manage.py shell
@@ -147,12 +152,16 @@ curl https://tudominio.onrender.com/readyz/
 python manage.py runserver --verbosity 2
 ```
 
-### Consultar BD Directamente
+### Consultar BD Directamente (entorno local o terminal autorizada)
 
 ```bash
 python manage.py dbshell
 # Luego: SELECT COUNT(*) FROM inventario_producto;
 ```
+
+Si no tienes shell interactivo en producción, usa el panel administrativo o
+ejecuta estos comandos solo en tu máquina local apuntando a la base de datos
+correspondiente.
 
 ---
 
