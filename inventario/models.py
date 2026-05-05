@@ -9,6 +9,18 @@ from cloudinary.models import CloudinaryField
 from django.core.cache import cache
 
 
+def _fallback_image_path(prefix, name, fallback_map):
+    if name in fallback_map:
+        return fallback_map[name]
+
+    normalized_name = slugify(name)
+    for key, value in fallback_map.items():
+        if slugify(key) == normalized_name:
+            return value
+
+    return f"inventario/images/{prefix}-{normalized_name}.svg"
+
+
 class Usuario(AbstractUser):
 
     ROLES = (
@@ -74,7 +86,7 @@ class Categoria(models.Model):
                     return url
             except Exception:
                 pass
-        return f"inventario/images/categoria-{slugify(self.nombre)}.svg"
+        return _fallback_image_path('categoria', self.nombre, self.FALLBACK_IMAGES)
 
     @property
     def imagen_is_absolute(self):
@@ -165,7 +177,7 @@ class Producto(models.Model):
                     return url
             except Exception:
                 pass
-        return f"inventario/images/producto-{slugify(self.nombre)}.svg"
+        return _fallback_image_path('producto', self.nombre, self.FALLBACK_IMAGES)
 
     @property
     def imagen_is_absolute(self):
