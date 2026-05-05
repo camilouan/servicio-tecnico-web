@@ -51,6 +51,16 @@ def upload_remote_image(source_url, public_id):
         return None
 
 
+def get_first_or_create(model_class, lookup_field, lookup_value, defaults):
+    queryset = model_class.objects.filter(**{lookup_field: lookup_value}).order_by('id')
+    instance = queryset.first()
+
+    if instance is not None:
+        return instance, False
+
+    return model_class.objects.create(**{lookup_field: lookup_value, **defaults}), True
+
+
 class Command(BaseCommand):
     help = 'Cargar datos iniciales y subir imágenes a Cloudinary para Render'
 
@@ -60,9 +70,15 @@ class Command(BaseCommand):
             action='store_true',
             help='Sube imágenes de ejemplo a Cloudinary y las asigna a productos y categorías.'
         )
+        parser.add_argument(
+            '--force-images',
+            action='store_true',
+            help='Reemplaza imágenes existentes y vuelve a subir el catálogo completo a Cloudinary.'
+        )
 
     def handle(self, *args, **kwargs):
         with_images = kwargs.get('with_images', False)
+        force_images = kwargs.get('force_images', False)
 
         categorias = [
             "Celulares",
@@ -72,15 +88,17 @@ class Command(BaseCommand):
         ]
 
         for nombre in categorias:
-            categoria, _ = Categoria.objects.get_or_create(
-                nombre=nombre,
-                defaults={
+            categoria, _ = get_first_or_create(
+                Categoria,
+                'nombre',
+                nombre,
+                {
                     "descripcion": f"Categoría {nombre}",
                     "activa": True,
                 }
             )
 
-            if with_images and not categoria.imagen:
+            if with_images and (force_images or not categoria.imagen):
                 image_url = CATEGORY_IMAGES.get(nombre)
                 if image_url:
                     public_id = upload_remote_image(
@@ -123,9 +141,11 @@ class Command(BaseCommand):
         ]
 
         for nombre, categoria, precio, stock in productos:
-            producto, _ = Producto.objects.get_or_create(
-                nombre=nombre,
-                defaults={
+            producto, _ = get_first_or_create(
+                Producto,
+                'nombre',
+                nombre,
+                {
                     "descripcion": f"{nombre} disponible",
                     "precio": precio,
                     "stock_total": stock,
@@ -135,7 +155,7 @@ class Command(BaseCommand):
                 }
             )
 
-            if with_images and not producto.imagen:
+            if with_images and (force_images or not producto.imagen):
                 image_url = PRODUCT_IMAGES.get(nombre)
                 if image_url:
                     public_id = upload_remote_image(
