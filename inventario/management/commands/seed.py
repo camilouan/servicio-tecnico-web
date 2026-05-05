@@ -109,10 +109,13 @@ class Command(BaseCommand):
                         categoria.imagen = public_id
                         categoria.save()
 
-        celulares = Categoria.objects.get(nombre="Celulares")
-        accesorios = Categoria.objects.get(nombre="Accesorios")
-        consolas = Categoria.objects.get(nombre="Consolas")
-        computadores = Categoria.objects.get(nombre="Computadores")
+        celulares = Categoria.objects.filter(nombre="Celulares").order_by('id').first()
+        accesorios = Categoria.objects.filter(nombre="Accesorios").order_by('id').first()
+        consolas = Categoria.objects.filter(nombre="Consolas").order_by('id').first()
+        computadores = Categoria.objects.filter(nombre="Computadores").order_by('id').first()
+
+        if not all([celulares, accesorios, consolas, computadores]):
+            raise self.CommandError("No se encontraron todas las categorías base requeridas.")
 
         productos = [
             ("iPhone 14", celulares, 4500000, 10),
