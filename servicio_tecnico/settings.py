@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 
 
+# Configuración base del proyecto Django.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-local-dev-key')
@@ -136,6 +137,7 @@ DB_CONNECT_TIMEOUT = int(os.environ.get('DB_CONNECT_TIMEOUT', '5'))
 DB_STATEMENT_TIMEOUT_MS = int(os.environ.get('DB_STATEMENT_TIMEOUT_MS', '20000'))
 
 if DATABASE_URL:
+    # En Render uso PostgreSQL; en local, si no hay DATABASE_URL, queda SQLite.
     import urllib.parse
     parsed_url = urllib.parse.urlparse(DATABASE_URL)
     DATABASES = {
@@ -237,6 +239,7 @@ WHITENOISE_USE_FINDERS = True
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Creo las carpetas si no existen para evitar errores en local.
 os.makedirs(MEDIA_ROOT, exist_ok=True)
 os.makedirs(STATIC_ROOT, exist_ok=True)
 

@@ -2,6 +2,8 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+
+# Rutas públicas, privadas y de soporte del proyecto.
 urlpatterns = [
 
     path('healthz/', views.healthz, name='healthz'),

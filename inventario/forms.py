@@ -9,6 +9,7 @@ from .models import Usuario
 
 
 class RegistroForm(UserCreationForm):
+    # Formulario de registro con el checkbox legal que el proyecto necesita.
     acepta_politicas = forms.BooleanField(
         required=True,
         label=mark_safe(
@@ -35,6 +36,7 @@ class RegistroForm(UserCreationForm):
         ]
 
     def __init__(self, *args, **kwargs):
+        # Dejo los campos en un orden más cómodo para el formulario.
         super().__init__(*args, **kwargs)
         self.order_fields([
             'username',
@@ -57,6 +59,7 @@ class RegistroForm(UserCreationForm):
                 field.widget.attrs.update({'class': 'form-control'})
 
     def save(self, commit=True):
+        # Marco la aceptación legal y guardo la fecha, porque luego se usa en auditoría.
         user = super().save(commit=False)
         user.acepta_politicas = True
         user.fecha_aceptacion_politicas = timezone.now()
@@ -66,6 +69,7 @@ class RegistroForm(UserCreationForm):
 
 
 class PerfilUsuarioForm(forms.ModelForm):
+    # Sirve para que el usuario edite su perfil sin tocar datos sensibles.
     class Meta:
         model = Usuario
         fields = ['foto_perfil', 'nombres', 'apellidos', 'email', 'telefono', 'direccion', 'ciudad']
@@ -82,6 +86,7 @@ class PerfilUsuarioForm(forms.ModelForm):
 
 class CambioPasswordSemanalForm(PasswordChangeForm):
     def clean(self):
+        # Bloqueo un cambio si la última actualización fue hace menos de una semana.
         cleaned_data = super().clean()
         ultima_actualizacion = getattr(self.user, 'ultima_actualizacion_password', None)
 
@@ -96,6 +101,7 @@ class CambioPasswordSemanalForm(PasswordChangeForm):
 
 
 class EliminarCuentaForm(forms.Form):
+    # Formulario simple para borrar cuenta con confirmación manual.
     password_actual = forms.CharField(
         label='Contraseña actual',
         widget=forms.PasswordInput(attrs={'class': 'form-control'}),

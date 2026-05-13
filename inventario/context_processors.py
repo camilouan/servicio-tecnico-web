@@ -4,6 +4,7 @@ from .models import Apartado
 
 
 def admin_apartados_popup(request):
+    # Este context processor arma el resumen chiquito que usa el panel admin.
     user = getattr(request, 'user', None)
 
     if not user or not user.is_authenticated or not (user.is_staff or user.is_superuser):
@@ -15,6 +16,7 @@ def admin_apartados_popup(request):
     Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
 
     estados_visibles = ['pendiente', 'confirmado']
+    # Solo tomo apartados recientes para no cargar de más el admin.
     recientes_qs = (
         Apartado.objects.filter(estado__in=estados_visibles)
         .select_related('usuario', 'producto')

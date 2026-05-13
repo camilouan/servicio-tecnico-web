@@ -5,6 +5,7 @@ from django.utils.text import slugify
 
 from .models import Categoria, Producto
 
+# Datos iniciales del proyecto. Esto deja el catálogo listo para usar en local.
 CATEGORY_IMAGES = {
     "Celulares": "https://commons.wikimedia.org/wiki/Special:FilePath/Mobile_Phone_Evolution_1992_-_2014.jpg",
     "Accesorios": "https://commons.wikimedia.org/wiki/Special:FilePath/SanDisk-Cruzer-USB-4GB-ThumbDrive.jpg",
@@ -37,7 +38,7 @@ PRODUCT_IMAGES = {
 
 
 def upload_remote_image(source_url, public_id):
-    # Evita llamadas de red durante la carga de páginas en producción.
+    # Solo subo imágenes si la variable de entorno lo permite.
     if os.environ.get('SEED_UPLOAD_REMOTE_IMAGES', 'False') != 'True':
         return None
 
@@ -57,7 +58,7 @@ def upload_remote_image(source_url, public_id):
 
 
 def ensure_initial_data():
-    # Evita repetir la inicialización en cada petición y reduce la latencia.
+    # Si ya hay datos, no hago nada. Así no repito semillas sin necesidad.
     if Categoria.objects.exists() and Producto.objects.exists():
         return
 
@@ -69,6 +70,7 @@ def ensure_initial_data():
     ]
 
     for nombre in categorias:
+        # Creo la categoría si falta y le dejo una imagen de respaldo.
         categoria, _ = Categoria.objects.get_or_create(
             nombre=nombre,
             defaults={
@@ -112,6 +114,7 @@ def ensure_initial_data():
     ]
 
     for nombre, categoria_nombre, precio, stock in productos:
+        # Los productos se cargan con valores de ejemplo para que el catálogo no quede vacío.
         categoria = Categoria.objects.get(nombre=categoria_nombre)
         producto, _ = Producto.objects.get_or_create(
             nombre=nombre,

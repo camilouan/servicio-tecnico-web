@@ -14,7 +14,11 @@ from .models import Producto, Apartado, Categoria, HeroBanner
 from .forms import RegistroForm, PerfilUsuarioForm, CambioPasswordSemanalForm, EliminarCuentaForm
 
 
+# Vistas del proyecto. Acá está casi toda la lógica que ve el usuario.
+
+
 def home(request):
+    # Vista simple para mostrar productos en la pantalla principal.
     productos = Producto.objects.all()
     return render(request, 'home.html', {'productos': productos})
 
@@ -35,6 +39,7 @@ def readyz(request):
 
 
 def registro(request):
+    # Registro normal de usuarios con sesión iniciada al terminar.
     if request.method == 'POST':
         form = RegistroForm(request.POST)
         if form.is_valid():
@@ -51,6 +56,7 @@ def registro(request):
 
 
 def _get_client_ip(request):
+    # Saco la IP de la forma más simple posible para usarla en el control de login.
     forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if forwarded_for:
         return forwarded_for.split(',')[0].strip()
@@ -58,6 +64,7 @@ def _get_client_ip(request):
 
 
 def _login_attempt_keys(request, username):
+    # Armo claves de cache separadas por usuario e IP para el bloqueo temporal.
     safe_username = (username or 'anonimo').strip().lower()
     safe_ip = _get_client_ip(request).replace(':', '_').replace('.', '_')
     base_key = f'login_security:{safe_username}:{safe_ip}'
@@ -65,6 +72,7 @@ def _login_attempt_keys(request, username):
 
 
 def login_view(request):
+    # Este login tiene bloqueo por intentos fallidos y también respeta sesión activa.
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
         attempts_key, lock_key = _login_attempt_keys(request, username)
@@ -122,6 +130,7 @@ def terminos_servicio(request):
 
 @login_required
 def apartar_producto(request, producto_id):
+    # Flujo principal del negocio: reservar un producto y bajar su stock.
     Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
     producto = get_object_or_404(Producto, id=producto_id)
 
@@ -140,6 +149,7 @@ def apartar_producto(request, producto_id):
         return redirect('productos')
 
     estados_activos = ['pendiente', 'confirmado']
+    # Solo cuento apartados que siguen activos para no romper el límite por usuario.
     apartados_activos_usuario = Apartado.objects.filter(
         usuario=request.user,
         estado__in=estados_activos,
@@ -179,12 +189,14 @@ def apartar_producto(request, producto_id):
     return redirect('productos')
 
 def landing(request):
+    # La landing mezcla categorías activas con el banner principal.
     categorias = Categoria.objects.filter(activa=True)
     hero = HeroBanner.objects.filter(activo=True).order_by('-orden', '-fecha_actualizacion').first()
     return render(request, 'landing.html', {'categorias': categorias, 'hero': hero})
 
 
 def productos(request):
+    # Esta vista hace los filtros que usa el catálogo público.
     categoria_seleccionada = request.GET.get('categoria', '').strip()
     disponibilidad = request.GET.get('disponibilidad', '').strip()
     orden = request.GET.get('orden', '').strip()
@@ -240,6 +252,7 @@ def productos(request):
 
 @login_required
 def mis_apartados(request):
+    # Página privada para que el usuario vea sus reservas activas e históricas.
     Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
     apartados = Apartado.objects.filter(usuario=request.user).select_related('producto').order_by('-fecha_apartado')
 
@@ -263,6 +276,7 @@ def mis_apartados(request):
 
 @login_required
 def estado_apartados_api(request):
+    # API chiquita para refrescar el estado de los apartados sin recargar todo.
     Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
     apartados = (
         Apartado.objects.filter(usuario=request.user)
@@ -287,6 +301,7 @@ def estado_apartados_api(request):
 
 @staff_member_required
 def admin_apartados_resumen_api(request):
+    # Resumen rápido para el panel admin, pensado para no cargar la vista completa.
     Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
     estados_visibles = ['pendiente', 'confirmado']
     recientes = (
@@ -324,6 +339,7 @@ def admin_apartados_resumen_api(request):
 
 @login_required
 def mi_perfil(request):
+    # En esta vista se junta perfil, cambio de contraseña y borrado de cuenta.
     usuario = request.user
 
     if request.method == 'POST':

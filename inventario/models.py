@@ -9,7 +9,11 @@ from cloudinary.models import CloudinaryField
 from django.core.cache import cache
 
 
+# Acá están los modelos principales del sistema y algunas reglas básicas del negocio.
+
+
 def _fallback_image_path(prefix, name, fallback_map):
+    # Si no hay imagen subida, intento devolver una ruta segura o una imagen por defecto.
     if name in fallback_map:
         return fallback_map[name]
 
@@ -28,6 +32,7 @@ class Usuario(AbstractUser):
         ('administrador', 'Administrador'),
     )
 
+    # Campos extra que necesita el sistema además de los datos normales de Django.
     nombres = models.CharField(max_length=100)
     apellidos = models.CharField(max_length=100)
     telefono = models.CharField(max_length=20)
@@ -62,6 +67,7 @@ class Usuario(AbstractUser):
 
 class Categoria(models.Model):
 
+    # Cada categoría agrupa productos y puede tener una imagen visible en el catálogo.
     nombre = models.CharField(max_length=100)
 
     descripcion = models.TextField()
@@ -98,6 +104,7 @@ class Categoria(models.Model):
         return False
 
     def clean(self):
+        # Valido antes de guardar para no dejar categorías vacías en la base.
         errors = {}
 
         if not self.nombre or not self.nombre.strip():
@@ -110,6 +117,7 @@ class Categoria(models.Model):
             raise ValidationError(errors)
     
     def save(self, *args, **kwargs):
+        # Paso por full_clean() para que se apliquen las validaciones del modelo.
         self.full_clean()  # Ejecuta validaciones antes de guardar
         super().save(*args, **kwargs)
 
@@ -121,6 +129,7 @@ class Categoria(models.Model):
 
 class Producto(models.Model):
 
+    # Producto que se muestra en el catálogo y que después se puede apartar.
     ESTADOS = (
         ('disponible', 'Disponible'),
         ('no_disponible', 'No Disponible'),
@@ -189,6 +198,7 @@ class Producto(models.Model):
         return False
 
     def clean(self):
+        # Acá reviso que los números de stock tengan sentido antes de guardar.
         errors = {}
         
         # Validar que el precio no sea negativo
@@ -212,6 +222,7 @@ class Producto(models.Model):
             raise ValidationError(errors)
     
     def save(self, *args, **kwargs):
+        # Igual que en categoría, guardo solo si los datos pasan las validaciones.
         self.full_clean()  # Ejecuta validaciones antes de guardar
         super().save(*args, **kwargs)
 
@@ -222,6 +233,7 @@ class Producto(models.Model):
 
 
 class HeroBanner(models.Model):
+    # Banner principal que aparece en la portada.
     titulo = models.CharField(
         max_length=255,
         default='Encuentra accesorios y dispositivos con la mejor experiencia de compra'
@@ -256,6 +268,7 @@ class HeroBanner(models.Model):
 
 class Apartado(models.Model):
 
+    # Un apartado es la reserva de un producto por parte de un usuario.
     ESTADOS = (
         ('pendiente', 'Pendiente'),
         ('confirmado', 'Confirmado'),
@@ -300,6 +313,7 @@ class Apartado(models.Model):
 
     @classmethod
     def actualizar_apartados_vencidos(cls):
+        # Aquí se liberan los apartados vencidos y se devuelve el stock al producto.
         motivo_expirado = 'Apartado expirado automáticamente por superar el tiempo límite.'
 
         with transaction.atomic():
@@ -320,6 +334,7 @@ class Apartado(models.Model):
             )
 
             for item in cantidades_por_producto:
+                # Sumo el stock por producto para no hacer un update por cada fila.
                 Producto.objects.select_for_update().filter(pk=item['producto_id']).update(
                     stock_disponible=models.F('stock_disponible') + item['total']
                 )
@@ -334,6 +349,7 @@ class Apartado(models.Model):
 
     @classmethod
     def actualizar_apartados_vencidos_si_corresponde(cls, throttle_seconds=60):
+        # Evita que esta limpieza se ejecute demasiadas veces seguidas.
         if cache.add('apartados:expiracion:global_lock', '1', timeout=throttle_seconds):
             return cls.actualizar_apartados_vencidos()
         return 0
@@ -349,6 +365,7 @@ class Apartado(models.Model):
         return cantidad if estado in self.ESTADOS_CON_STOCK_OCUPADO else 0
 
     def _ajustar_stock_producto(self, producto_id, delta_consumo):
+        # Ajusto el stock del producto con bloqueo de fila para no pisar cambios.
         if delta_consumo == 0:
             return
 
@@ -361,6 +378,7 @@ class Apartado(models.Model):
         producto.save(update_fields=['stock_disponible'])
 
     def save(self, *args, **kwargs):
+        # El guardado del apartado toca stock, estado y datos de confirmación.
         if not self.codigo_verificacion:
             self.codigo_verificacion = self.generar_codigo_verificacion()
 

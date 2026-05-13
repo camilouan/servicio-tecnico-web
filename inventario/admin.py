@@ -6,6 +6,7 @@ from django.utils.html import format_html
 from .models import Usuario, Producto, Apartado, Categoria, HeroBanner
 
 
+# Ajustes básicos del admin para que se vea más claro y útil.
 admin.site.site_header = 'Administración Servicio Técnico'
 admin.site.site_title = 'Servicio Técnico Admin'
 admin.site.index_title = 'Gestión interna del sistema'
@@ -13,6 +14,7 @@ admin.site.logout_template = 'admin/logged_out.html'
 
 
 def render_image_preview(url):
+    # Muestro una miniatura simple en el admin si hay imagen disponible.
     if not url:
         return 'Sin imagen'
     if not str(url).startswith('http'):
@@ -62,7 +64,7 @@ class ApartadoAdmin(admin.ModelAdmin):
     readonly_fields = ('codigo_verificacion', 'fecha_confirmacion', 'confirmado_por')
 
     def save_model(self, request, obj, form, change):
-        # Si el estado está cambiando a 'confirmado' y el usuario es admin
+        # Si el admin confirma el apartado, guardo quién hizo el cambio.
         if change and obj.estado == 'confirmado':
             obj.confirmado_por = request.user
         
@@ -84,6 +86,7 @@ class HeroBannerAdmin(admin.ModelAdmin):
 
 @admin.register(Usuario)
 class UsuarioAdmin(UserAdmin):
+    # Extiendo el admin de Django para ver los campos extra del usuario.
     list_display = ('username', 'email', 'nombres', 'apellidos', 'rol', 'activo', 'acepta_politicas', 'is_staff')
     list_filter = ('rol', 'activo', 'acepta_politicas', 'is_staff', 'is_superuser')
     search_fields = ('username', 'email', 'nombres', 'apellidos', 'documento_identidad')
