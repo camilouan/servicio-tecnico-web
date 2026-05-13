@@ -522,7 +522,6 @@ servicio_tecnico/
 ├── render.yaml
 ├── README.md
 ├── MANUAL_TECNICO.md
-├── GUIA_RAPIDA_ADMIN.md
 ├── inventario/
 │   ├── models.py
 │   ├── views.py
