@@ -179,6 +179,18 @@ python -m venv venv
 venv\Scripts\activate
 ```
 
+Si usas PowerShell y aparece un error al ejecutar `Activate.ps1` por la política de ejecución, usa una de estas opciones:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+```
+
+O bien activa el entorno desde CMD, o ejecuta Python directamente sin activar el entorno:
+
+```bash
+venv\Scripts\python.exe manage.py runserver
+```
+
 **macOS / Linux**
 
 ```bash
@@ -474,6 +486,20 @@ Posibles causas:
 
 - Muchos intentos fallidos.
 - Bloqueo temporal por seguridad.
+
+### PowerShell bloquea la activación del entorno virtual
+
+Si al activar el entorno virtual en Windows aparece un error relacionado con `Activate.ps1` o con la política de ejecución de PowerShell, prueba lo siguiente:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+```
+
+Ese cambio solo aplica a la sesión actual. Si prefieres no tocar la política, también puedes ejecutar los comandos con el intérprete del entorno virtual directamente:
+
+```bash
+venv\Scripts\python.exe manage.py runserver
+```
 
 ### Productos vacíos
 
