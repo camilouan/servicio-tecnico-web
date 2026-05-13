@@ -204,6 +204,8 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+En Windows, `psycopg2-binary` no se instala porque el proyecto usa SQLite por defecto en desarrollo local. En Render sí se instala normalmente, ya que el despliegue corre sobre Linux y usa PostgreSQL cuando `DATABASE_URL` está definida.
+
 ### 4. Configurar variables locales
 
 Crear un archivo `.env` o definir variables en el sistema:
