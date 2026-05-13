@@ -145,7 +145,7 @@ class Producto(models.Model):
 
     stock_disponible = models.IntegerField()
 
-    # 👇 Imagen almacenada en Cloudinary
+    #  Imagen almacenada en Cloudinary
     imagen = CloudinaryField('imagen', blank=True, null=True)
 
     fecha_creacion = models.DateTimeField(auto_now_add=True)
