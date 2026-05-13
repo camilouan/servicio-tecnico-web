@@ -13,7 +13,7 @@
 
 Versión: 1.0  
 Fecha: Mayo 2026  
-Autor: Equipo de Desarrollo  
+Autor: CAMILO ANDRES PARRA CUENCA
 Clasificación: Documentación Técnica Interna
 
 ---
@@ -1414,7 +1414,7 @@ servicio-tecnico-web/
 
 ---
 
-**Documento preparado por**: Equipo de Desarrollo  
+**Documento preparado por**: CAMILO ANDRES PARRA CUENCA
 **Versión**: 1.0  
 **Fecha última actualización**: Mayo 2026  
 **Estado**: Aprobado para uso administrativo
