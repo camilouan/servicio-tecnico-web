@@ -58,6 +58,18 @@ class RegistroForm(UserCreationForm):
             else:
                 field.widget.attrs.update({'class': 'form-control'})
 
+        self.fields['email'].widget.attrs.update({
+            'type': 'email',
+            'autocomplete': 'email',
+            'placeholder': 'correo@ejemplo.com',
+        })
+        self.fields['password1'].widget.attrs.update({
+            'autocomplete': 'new-password',
+        })
+        self.fields['password2'].widget.attrs.update({
+            'autocomplete': 'new-password',
+        })
+
     def save(self, commit=True):
         # Marco la aceptación legal y guardo la fecha, porque luego se usa en auditoría.
         user = super().save(commit=False)

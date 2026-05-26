@@ -16,7 +16,7 @@
                             <h2 class="fw-bold mb-1">Registro de usuario</h2>
                             <p class="text-muted mb-4">Crea tu cuenta y comienza a apartar productos de inmediato.</p>
                         </div>
-                        <form method="POST">
+                        <form method="POST" id="registro-form" novalidate>
                             {% csrf_token %}
 
                             {% if form.non_field_errors %}
@@ -35,6 +35,48 @@
                                     {% if field.errors %}
                                     <div class="text-danger small mt-2">{{ field.errors }}</div>
                                     {% endif %}
+                                </div>
+                                {% elif field.name == 'password1' %}
+                                <div class="mb-3">
+                                    <label class="form-label">{{ field.label }}</label>
+                                    <div class="input-group">
+                                        {{ field }}
+                                        <button class="btn btn-outline-secondary" type="button" id="toggle-password1" aria-label="Mostrar u ocultar contrasena">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    {% if field.errors %}
+                                    <div class="text-danger small">{{ field.errors }}</div>
+                                    {% endif %}
+                                    <div class="mt-2 small" id="password-rules">
+                                        <div id="rule-length" class="text-muted">- Minimo 8 caracteres</div>
+                                        <div id="rule-upper" class="text-muted">- Una letra mayuscula</div>
+                                        <div id="rule-number" class="text-muted">- Un numero</div>
+                                        <div id="rule-special" class="text-muted">- Un caracter especial</div>
+                                    </div>
+                                </div>
+                                {% elif field.name == 'password2' %}
+                                <div class="mb-3">
+                                    <label class="form-label">{{ field.label }}</label>
+                                    <div class="input-group">
+                                        {{ field }}
+                                        <button class="btn btn-outline-secondary" type="button" id="toggle-password2" aria-label="Mostrar u ocultar confirmacion de contrasena">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    {% if field.errors %}
+                                    <div class="text-danger small">{{ field.errors }}</div>
+                                    {% endif %}
+                                    <div id="password-match-feedback" class="small mt-1 text-muted">Escribe ambas contrasenas para validar coincidencia.</div>
+                                </div>
+                                {% elif field.name == 'email' %}
+                                <div class="mb-3">
+                                    <label class="form-label">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.errors %}
+                                    <div class="text-danger small">{{ field.errors }}</div>
+                                    {% endif %}
+                                    <div id="email-feedback" class="small mt-1 text-muted">Ingresa un correo valido.</div>
                                 </div>
                                 {% else %}
                                 <div class="mb-3">
@@ -61,4 +103,145 @@
         </div>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('registro-form');
+    const emailInput = document.getElementById('id_email');
+    const pass1 = document.getElementById('id_password1');
+    const pass2 = document.getElementById('id_password2');
+    const emailFeedback = document.getElementById('email-feedback');
+    const matchFeedback = document.getElementById('password-match-feedback');
+    const rules = {
+        length: document.getElementById('rule-length'),
+        upper: document.getElementById('rule-upper'),
+        number: document.getElementById('rule-number'),
+        special: document.getElementById('rule-special')
+    };
+
+    function setFieldState(input, valid) {
+        if (!input) return;
+        input.classList.remove('is-valid', 'is-invalid');
+        if (valid === true) input.classList.add('is-valid');
+        if (valid === false) input.classList.add('is-invalid');
+    }
+
+    function updateRule(element, ok) {
+        if (!element) return;
+        element.classList.remove('text-muted', 'text-success', 'text-danger');
+        element.classList.add(ok ? 'text-success' : 'text-danger');
+    }
+
+    async function validateEmailRealtime() {
+        if (!emailInput) return true;
+        const email = emailInput.value.trim();
+        if (!email) {
+            setFieldState(emailInput, null);
+            emailFeedback.textContent = 'Ingresa un correo valido.';
+            emailFeedback.className = 'small mt-1 text-muted';
+            return false;
+        }
+
+        const formatOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        if (!formatOk) {
+            setFieldState(emailInput, false);
+            emailFeedback.textContent = 'Formato de correo invalido.';
+            emailFeedback.className = 'small mt-1 text-danger';
+            return false;
+        }
+
+        try {
+            const res = await fetch(`/api/auth/email-exists/?email=${encodeURIComponent(email)}`);
+            const data = await res.json();
+            if (data.exists) {
+                setFieldState(emailInput, false);
+                emailFeedback.textContent = 'Este correo ya esta registrado.';
+                emailFeedback.className = 'small mt-1 text-danger';
+                return false;
+            }
+
+            setFieldState(emailInput, true);
+            emailFeedback.textContent = 'Correo valido y disponible.';
+            emailFeedback.className = 'small mt-1 text-success';
+            return true;
+        } catch (err) {
+            setFieldState(emailInput, true);
+            emailFeedback.textContent = 'Correo con formato valido.';
+            emailFeedback.className = 'small mt-1 text-success';
+            return true;
+        }
+    }
+
+    function validatePasswordRules() {
+        if (!pass1) return false;
+        const value = pass1.value || '';
+        const status = {
+            length: value.length >= 8,
+            upper: /[A-Z]/.test(value),
+            number: /\d/.test(value),
+            special: /[^A-Za-z0-9]/.test(value)
+        };
+
+        updateRule(rules.length, status.length);
+        updateRule(rules.upper, status.upper);
+        updateRule(rules.number, status.number);
+        updateRule(rules.special, status.special);
+
+        const allOk = status.length && status.upper && status.number && status.special;
+        setFieldState(pass1, value ? allOk : null);
+        return allOk;
+    }
+
+    function validatePasswordMatch() {
+        if (!pass1 || !pass2) return false;
+        if (!pass2.value) {
+            setFieldState(pass2, null);
+            matchFeedback.textContent = 'Escribe ambas contrasenas para validar coincidencia.';
+            matchFeedback.className = 'small mt-1 text-muted';
+            return false;
+        }
+
+        const match = pass1.value === pass2.value;
+        setFieldState(pass2, match);
+        matchFeedback.textContent = match ? 'Las contrasenas coinciden.' : 'Las contrasenas no coinciden.';
+        matchFeedback.className = `small mt-1 ${match ? 'text-success' : 'text-danger'}`;
+        return match;
+    }
+
+    function bindToggle(buttonId, input) {
+        const btn = document.getElementById(buttonId);
+        if (!btn || !input) return;
+        btn.addEventListener('click', function () {
+            const isPassword = input.getAttribute('type') === 'password';
+            input.setAttribute('type', isPassword ? 'text' : 'password');
+            btn.innerHTML = `<i class="fas ${isPassword ? 'fa-eye-slash' : 'fa-eye'}"></i>`;
+        });
+    }
+
+    let emailDebounce = null;
+    if (emailInput) {
+        emailInput.addEventListener('input', function () {
+            clearTimeout(emailDebounce);
+            emailDebounce = setTimeout(validateEmailRealtime, 300);
+        });
+    }
+
+    if (pass1) pass1.addEventListener('input', function () { validatePasswordRules(); validatePasswordMatch(); });
+    if (pass2) pass2.addEventListener('input', validatePasswordMatch);
+
+    bindToggle('toggle-password1', pass1);
+    bindToggle('toggle-password2', pass2);
+
+    form.addEventListener('submit', async function (event) {
+        const emailOk = await validateEmailRealtime();
+        const passRulesOk = validatePasswordRules();
+        const passMatchOk = validatePasswordMatch();
+
+        if (!emailOk || !passRulesOk || !passMatchOk) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    });
+});
+</script>
 {% endblock %}

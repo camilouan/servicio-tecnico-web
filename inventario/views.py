@@ -9,9 +9,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from .models import Producto, Apartado, Categoria, HeroBanner
+from .models import Usuario, Producto, Apartado, Categoria, HeroBanner
 from .forms import RegistroForm, PerfilUsuarioForm, CambioPasswordSemanalForm, EliminarCuentaForm
 
 
@@ -37,6 +38,21 @@ def readyz(request):
         return JsonResponse({'status': 'error', 'detail': str(exc)}, status=503)
 
     return JsonResponse({'status': 'ready'}, status=200)
+
+
+def email_exists_api(request):
+    # Endpoint liviano para validar email en tiempo real durante el registro.
+    email = (request.GET.get('email') or '').strip()
+    if not email:
+        return JsonResponse({'valid': False, 'exists': False})
+
+    try:
+        validate_email(email)
+    except ValidationError:
+        return JsonResponse({'valid': False, 'exists': False})
+
+    exists = Usuario.objects.filter(email__iexact=email).exists()
+    return JsonResponse({'valid': True, 'exists': exists})
 
 
 def registro(request):
@@ -72,12 +88,29 @@ def _login_attempt_keys(request, username):
     return f'{base_key}:attempts', f'{base_key}:lock'
 
 
+def _style_login_form(form):
+    # Homogeneiza estilos/atributos para que el template y JS funcionen igual siempre.
+    form.fields['username'].widget.attrs.update({
+        'class': 'form-control',
+        'placeholder': 'Tu usuario',
+        'autocomplete': 'username',
+        'id': 'id_login_username',
+    })
+    form.fields['password'].widget.attrs.update({
+        'class': 'form-control',
+        'placeholder': 'Tu contrasena',
+        'autocomplete': 'current-password',
+        'id': 'id_login_password',
+    })
+    return form
+
+
 def login_view(request):
     # Este login tiene bloqueo por intentos fallidos y también respeta sesión activa.
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
         attempts_key, lock_key = _login_attempt_keys(request, username)
-        form = AuthenticationForm(request, data=request.POST)
+        form = _style_login_form(AuthenticationForm(request, data=request.POST))
 
         locked_until = cache.get(lock_key)
         if locked_until and locked_until > timezone.now():
@@ -111,7 +144,7 @@ def login_view(request):
             restantes = settings.LOGIN_MAX_FAILED_ATTEMPTS - intentos
             form.add_error(None, f'Credenciales inválidas. Te quedan {restantes} intento(s) antes del bloqueo temporal.')
     else:
-        form = AuthenticationForm()
+        form = _style_login_form(AuthenticationForm())
 
     return render(request, 'login.html', {'form': form})
 
