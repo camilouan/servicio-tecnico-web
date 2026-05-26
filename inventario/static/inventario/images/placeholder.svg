@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Imagen no disponible">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" rx="32" fill="url(#g)"/>
+  <rect x="110" y="110" width="580" height="380" rx="28" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.24)" stroke-width="6"/>
+  <circle cx="290" cy="250" r="42" fill="rgba(255,255,255,0.86)"/>
+  <path d="M210 420 L340 300 L425 385 L500 320 L590 420 Z" fill="rgba(255,255,255,0.36)"/>
+  <text x="400" y="520" text-anchor="middle" fill="#e2e8f0" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700">Imagen no disponible</text>
+</svg>

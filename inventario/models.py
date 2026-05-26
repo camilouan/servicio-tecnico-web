@@ -12,17 +12,9 @@ from django.core.cache import cache
 # Acá están los modelos principales del sistema y algunas reglas básicas del negocio.
 
 
-def _fallback_image_path(prefix, name, fallback_map):
-    # Si no hay imagen subida, intento devolver una ruta segura o una imagen por defecto.
-    if name in fallback_map:
-        return fallback_map[name]
-
+def _fallback_image_path(name, fallback_map):
     normalized_name = slugify(name)
-    for key, value in fallback_map.items():
-        if slugify(key) == normalized_name:
-            return value
-
-    return f"inventario/images/{prefix}-{normalized_name}.svg"
+    return fallback_map.get(normalized_name, 'inventario/images/placeholder.svg')
 
 
 class Usuario(AbstractUser):
@@ -77,10 +69,10 @@ class Categoria(models.Model):
     activa = models.BooleanField(default=True)
 
     FALLBACK_IMAGES = {
-        "Celulares": "https://commons.wikimedia.org/wiki/Special:FilePath/Mobile_Phone_Evolution_1992_-_2014.jpg",
-        "Accesorios": "https://commons.wikimedia.org/wiki/Special:FilePath/SanDisk-Cruzer-USB-4GB-ThumbDrive.jpg",
-        "Consolas": "https://commons.wikimedia.org/wiki/Special:FilePath/Gaming_Section_1_-_Retrosystems_2010.jpg",
-        "Computadores": "https://commons.wikimedia.org/wiki/Special:FilePath/Laptop_collage.jpg",
+        'celulares': 'inventario/images/categoria-celulares.svg',
+        'accesorios': 'inventario/images/categoria-accesorios.svg',
+        'consolas': 'inventario/images/categoria-consolas.svg',
+        'computadores': 'inventario/images/categoria-computadores.svg',
     }
 
     @property
@@ -92,7 +84,7 @@ class Categoria(models.Model):
                     return url
             except Exception:
                 pass
-        return _fallback_image_path('categoria', self.nombre, self.FALLBACK_IMAGES)
+        return _fallback_image_path(self.nombre, self.FALLBACK_IMAGES)
 
     @property
     def imagen_is_absolute(self):
@@ -155,26 +147,26 @@ class Producto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
 
     FALLBACK_IMAGES = {
-        "iPhone 14": "https://commons.wikimedia.org/wiki/Special:FilePath/IPhone_14_vector.svg",
-        "Samsung Galaxy S23": "https://commons.wikimedia.org/wiki/Special:FilePath/Galaxy_S23.png",
-        "Xiaomi Redmi Note 12": "https://commons.wikimedia.org/wiki/Special:FilePath/Redmi_Note_12_front.jpg",
-        "Motorola Edge 40": "https://commons.wikimedia.org/wiki/Special:FilePath/Motorola_Edge.png",
-        "Audífonos Bluetooth": "https://commons.wikimedia.org/wiki/Special:FilePath/Plantronics_headset.jpg",
-        "Teclado Mecanico RGB": "https://commons.wikimedia.org/wiki/Special:FilePath/Keyboard_Construction.JPG",
-        "Mouse Gamer": "https://commons.wikimedia.org/wiki/Special:FilePath/3-Tasten-Maus_Microsoft.jpg",
-        "Cargador Rapido": "https://commons.wikimedia.org/wiki/Special:FilePath/Notebook-Computer-AC-Adapter.jpg",
-        "PlayStation 5": "https://commons.wikimedia.org/wiki/Special:FilePath/Black_and_white_Playstation_5_base_edition_with_controller.png",
-        "Xbox Series X": "https://commons.wikimedia.org/wiki/Special:FilePath/Xbox_Series_X_S_color.svg",
-        "Nintendo Switch": "https://commons.wikimedia.org/wiki/Special:FilePath/Nintendo_Switch_2_in_Handheld_Mode.jpg",
-        "Laptop HP": "https://commons.wikimedia.org/wiki/Special:FilePath/Laptop_collage.jpg",
-        "MacBook Air": "https://commons.wikimedia.org/wiki/Special:FilePath/Macbook_Air_15_inch_-_2_(blurred).jpg",
-        "Asus ROG": "https://commons.wikimedia.org/wiki/Special:FilePath/ROG_ALLY_-_11.jpg",
-        "Monitor Gamer": "https://commons.wikimedia.org/wiki/Special:FilePath/MonitorLCDlcd.svg",
-        "Tablet Samsung": "https://commons.wikimedia.org/wiki/Special:FilePath/IPad_Mini_6_-_1.jpg",
-        "Smartwatch": "https://commons.wikimedia.org/wiki/Special:FilePath/Samsung_Galaxy_Watch.jpg",
-        "Parlante JBL": "https://commons.wikimedia.org/wiki/Special:FilePath/JBL_Paragon_(edited_and_cropped).jpg",
-        "Camara Web": "https://commons.wikimedia.org/wiki/Special:FilePath/Logicool_StreamCam_(cropped).jpg",
-        "Control PS5": "https://commons.wikimedia.org/wiki/Special:FilePath/PS4-Console-wDS4.jpg",
+        'iphone-14': 'inventario/images/producto-iphone-14.svg',
+        'samsung-galaxy-s23': 'inventario/images/producto-samsung-galaxy-s23.svg',
+        'xiaomi-redmi-note-12': 'inventario/images/producto-xiaomi-redmi-note-12.svg',
+        'motorola-edge-40': 'inventario/images/producto-motorola-edge-40.svg',
+        'audifonos-bluetooth': 'inventario/images/producto-audifonos-bluetooth.svg',
+        'teclado-mecanico-rgb': 'inventario/images/producto-teclado-mecanico-rgb.svg',
+        'mouse-gamer': 'inventario/images/producto-mouse-gamer.svg',
+        'cargador-rapido-65w': 'inventario/images/producto-cargador-rapido.svg',
+        'playstation-5': 'inventario/images/producto-playstation-5.svg',
+        'xbox-series-x': 'inventario/images/producto-xbox-series-x.svg',
+        'nintendo-switch': 'inventario/images/producto-nintendo-switch.svg',
+        'laptop-hp-pavilion': 'inventario/images/producto-laptop-hp.svg',
+        'macbook-air-m2': 'inventario/images/producto-macbook-air.svg',
+        'asus-rog-gamer': 'inventario/images/producto-asus-rog.svg',
+        'monitor-24-pulgadas': 'inventario/images/producto-monitor-gamer.svg',
+        'tablet-samsung-s9': 'inventario/images/producto-tablet-samsung.svg',
+        'smartwatch-huawei': 'inventario/images/producto-smartwatch.svg',
+        'parlante-jbl': 'inventario/images/producto-parlante-jbl.svg',
+        'camara-web-hd': 'inventario/images/producto-camara-web.svg',
+        'control-dualsense': 'inventario/images/producto-control-ps5.svg',
     }
 
     @property
@@ -186,7 +178,7 @@ class Producto(models.Model):
                     return url
             except Exception:
                 pass
-        return _fallback_image_path('producto', self.nombre, self.FALLBACK_IMAGES)
+        return _fallback_image_path(self.nombre, self.FALLBACK_IMAGES)
 
     @property
     def imagen_is_absolute(self):
