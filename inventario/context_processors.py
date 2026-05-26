@@ -1,6 +1,9 @@
 from django.utils import timezone
+import logging
 
 from .models import Apartado
+
+logger = logging.getLogger(__name__)
 
 
 def admin_apartados_popup(request):
@@ -13,26 +16,31 @@ def admin_apartados_popup(request):
     if not request.path.startswith('/admin'):
         return {'admin_popup_summary': None}
 
-    Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
+    try:
+        Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
 
-    estados_visibles = ['pendiente', 'confirmado']
-    # Solo tomo apartados recientes para no cargar de más el admin.
-    recientes_qs = (
-        Apartado.objects.filter(estado__in=estados_visibles)
-        .select_related('usuario', 'producto')
-        .order_by('-fecha_apartado')[:8]
-    )
+        estados_visibles = ['pendiente', 'confirmado']
+        # Solo tomo apartados recientes para no cargar de más el admin.
+        recientes_qs = (
+            Apartado.objects.filter(estado__in=estados_visibles)
+            .select_related('usuario', 'producto')
+            .order_by('-fecha_apartado')[:8]
+        )
 
-    limite_nuevos = timezone.now() - timezone.timedelta(hours=24)
+        limite_nuevos = timezone.now() - timezone.timedelta(hours=24)
 
-    return {
-        'admin_popup_summary': {
-            'pendientes': Apartado.objects.filter(estado='pendiente').count(),
-            'confirmados': Apartado.objects.filter(estado='confirmado').count(),
-            'nuevos_hoy': Apartado.objects.filter(
-                estado__in=estados_visibles,
-                fecha_apartado__gte=limite_nuevos,
-            ).count(),
-            'recientes': list(recientes_qs),
+        return {
+            'admin_popup_summary': {
+                'pendientes': Apartado.objects.filter(estado='pendiente').count(),
+                'confirmados': Apartado.objects.filter(estado='confirmado').count(),
+                'nuevos_hoy': Apartado.objects.filter(
+                    estado__in=estados_visibles,
+                    fecha_apartado__gte=limite_nuevos,
+                ).count(),
+                'recientes': list(recientes_qs),
+            }
         }
-    }
+    except Exception as exc:
+        # Protejo el admin de que un error en la limpieza de apartados lo deje inservible.
+        logger.exception('Error al obtener admin_popup_summary: %s', exc)
+        return {'admin_popup_summary': None}

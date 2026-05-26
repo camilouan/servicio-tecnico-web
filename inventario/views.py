@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.cache import cache
+import logging
 from django.db import connection
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
@@ -131,7 +132,10 @@ def terminos_servicio(request):
 @login_required
 def apartar_producto(request, producto_id):
     # Flujo principal del negocio: reservar un producto y bajar su stock.
-    Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
+    try:
+        Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
+    except Exception:
+        logging.exception('Error actualizando apartados vencidos en apartar_producto')
     producto = get_object_or_404(Producto, id=producto_id)
 
     try:
@@ -253,7 +257,10 @@ def productos(request):
 @login_required
 def mis_apartados(request):
     # Página privada para que el usuario vea sus reservas activas e históricas.
-    Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
+    try:
+        Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
+    except Exception:
+        logging.exception('Error actualizando apartados vencidos en mis_apartados')
     apartados = Apartado.objects.filter(usuario=request.user).select_related('producto').order_by('-fecha_apartado')
 
     estados_activos = ['pendiente', 'confirmado']
@@ -277,7 +284,10 @@ def mis_apartados(request):
 @login_required
 def estado_apartados_api(request):
     # API chiquita para refrescar el estado de los apartados sin recargar todo.
-    Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
+    try:
+        Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
+    except Exception:
+        logging.exception('Error actualizando apartados vencidos en estado_apartados_api')
     apartados = (
         Apartado.objects.filter(usuario=request.user)
         .select_related('producto')
@@ -302,7 +312,10 @@ def estado_apartados_api(request):
 @staff_member_required
 def admin_apartados_resumen_api(request):
     # Resumen rápido para el panel admin, pensado para no cargar la vista completa.
-    Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
+    try:
+        Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
+    except Exception:
+        logging.exception('Error actualizando apartados vencidos en admin_apartados_resumen_api')
     estados_visibles = ['pendiente', 'confirmado']
     recientes = (
         Apartado.objects.filter(estado__in=estados_visibles)
