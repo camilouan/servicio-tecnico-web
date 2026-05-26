@@ -333,6 +333,8 @@
 {% endif %}
 <script>
 (function(){
+    const misApartadosUrl = "{% url 'mis_apartados' %}";
+
     function createModal(message, redirectUrl){
         const modalId = 'apartadoSuccessModal';
         if (document.getElementById(modalId)) return new bootstrap.Modal(document.getElementById(modalId));
@@ -358,9 +360,9 @@
         tmp.innerHTML = modalHtml;
         document.body.appendChild(tmp.firstElementChild);
         const modalEl = document.getElementById(modalId);
-        const bsModal = new bootstrap.Modal(modalEl);
+        const bsModal = new bootstrap.Modal(modalEl, {backdrop: 'static', keyboard: false});
         const gotoBtn = document.getElementById(`${modalId}-goto`);
-        gotoBtn.addEventListener('click', function(){ if (redirectUrl) window.location.href = redirectUrl; else bsModal.hide(); });
+        gotoBtn.addEventListener('click', function(){ if (redirectUrl) window.location.href = redirectUrl; else window.location.href = misApartadosUrl; });
         return bsModal;
     }
 
@@ -378,11 +380,14 @@
             });
             const data = await resp.json();
             if (resp.ok && data.success){
-                const modal = createModal(data.message || 'Haz apartado correctamente. Ahora haz el proceso de apartado.', data.redirect_url);
+                const redirectTarget = data.redirect_url || misApartadosUrl;
+                const modal = createModal(data.message || 'Haz apartado correctamente. Ahora haz el proceso de apartado.', redirectTarget);
                 modal.show();
-                // auto-redirect after a short delay to keep UX smooth
-                if (data.redirect_url) {
-                    setTimeout(() => { window.location.href = data.redirect_url; }, 3500);
+                // auto-redirect after a short delay; cancel if user closes modal manually
+                const autoRedirectId = setTimeout(() => { window.location.href = redirectTarget; }, 3500);
+                const modalEl = document.getElementById('apartadoSuccessModal');
+                if (modalEl) {
+                    modalEl.addEventListener('hidden.bs.modal', function () { clearTimeout(autoRedirectId); }, { once: true });
                 }
             } else {
                 const msg = data && data.message ? data.message : 'No fue posible apartar el producto.';
