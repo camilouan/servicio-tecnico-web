@@ -4,6 +4,6 @@ services:
     runtime: python
     pythonVersion: 3.11
     buildCommand: chmod +x build.sh ; ./build.sh
-    startCommand: gunicorn servicio_tecnico.wsgi:application --bind 0.0.0.0:$PORT --workers ${WEB_CONCURRENCY:-2} --threads ${GUNICORN_THREADS:-2} --timeout 120
+    startCommand: gunicorn servicio_tecnico.wsgi:application --bind 0.0.0.0:$PORT --workers 1 --threads 1 --timeout 120 --access-logfile - --error-logfile - --log-level info
     healthCheckPath: /healthz/
 
