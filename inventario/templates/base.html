@@ -331,6 +331,100 @@
 })();
 </script>
 {% endif %}
+<script>
+(function(){
+    function createModal(message, redirectUrl){
+        const modalId = 'apartadoSuccessModal';
+        if (document.getElementById(modalId)) return new bootstrap.Modal(document.getElementById(modalId));
+        const modalHtml = `
+<div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+     <div class="modal-content">
+         <div class="modal-header">
+             <h5 class="modal-title">Apartado realizado</h5>
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body">
+             <p id="${modalId}-message">${message}</p>
+         </div>
+         <div class="modal-footer">
+             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+             <button type="button" class="btn btn-primary" id="${modalId}-goto">Ir a Mis apartados</button>
+         </div>
+     </div>
+    </div>
+</div>`;
+        const tmp = document.createElement('div');
+        tmp.innerHTML = modalHtml;
+        document.body.appendChild(tmp.firstElementChild);
+        const modalEl = document.getElementById(modalId);
+        const bsModal = new bootstrap.Modal(modalEl);
+        const gotoBtn = document.getElementById(`${modalId}-goto`);
+        gotoBtn.addEventListener('click', function(){ if (redirectUrl) window.location.href = redirectUrl; else bsModal.hide(); });
+        return bsModal;
+    }
+
+    async function handleApartar(e){
+        e.preventDefault();
+        const form = e.currentTarget;
+        const url = form.action;
+        const formData = new FormData(form);
+        try {
+            const resp = await fetch(url, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await resp.json();
+            if (resp.ok && data.success){
+                const modal = createModal(data.message || 'Haz apartado correctamente. Ahora haz el proceso de apartado.', data.redirect_url);
+                modal.show();
+                // auto-redirect after a short delay to keep UX smooth
+                if (data.redirect_url) {
+                    setTimeout(() => { window.location.href = data.redirect_url; }, 3500);
+                }
+            } else {
+                const msg = data && data.message ? data.message : 'No fue posible apartar el producto.';
+                showMiniToast(msg, true);
+            }
+        } catch (err) {
+            console.error(err);
+            showMiniToast('Error al procesar el apartado. Intenta nuevamente.', true);
+        }
+    }
+
+    function showMiniToast(message, isError) {
+        const container = document.getElementById('apartadoToastContainer');
+        if (!container) {
+            // fallback to alert if toast container missing
+            alert(message);
+            return;
+        }
+        const toast = document.createElement('div');
+        toast.className = `apartado-toast ${isError ? 'status-expirado' : 'status-confirmado'}`;
+        toast.innerHTML = `
+            <button type="button" class="apartado-toast-close" aria-label="Cerrar">&times;</button>
+            <div class="apartado-toast-icon"><i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-box-open'}"></i></div>
+            <div class="apartado-toast-content">
+                <div class="apartado-toast-label">${isError ? 'Error' : 'Información'}</div>
+                <h6 class="apartado-toast-title">${isError ? 'No se pudo completar' : 'Operación'}</h6>
+                <p class="apartado-toast-text">${message}</p>
+            </div>
+        `;
+        const closeButton = toast.querySelector('.apartado-toast-close');
+        closeButton.addEventListener('click', () => toast.remove());
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.add('is-visible'), 30);
+        setTimeout(() => { toast.classList.remove('is-visible'); setTimeout(() => toast.remove(), 250); }, 7000);
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+        document.querySelectorAll('form.apartar-form').forEach(f => f.addEventListener('submit', handleApartar));
+    });
+})();
+</script>
+
 {% block extra_js %}{% endblock %}
 </body>
 </html>

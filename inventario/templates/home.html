@@ -36,7 +36,7 @@
                         <span class="badge bg-danger badge-stock mb-3">Agotado</span>
                         {% endif %}
                         {% if producto.stock_disponible > 0 %}
-                        <form method="POST" action="{% url 'apartar' producto.id %}" class="mt-auto">
+                        <form method="POST" action="{% url 'apartar' producto.id %}" class="mt-auto apartar-form">
                             {% csrf_token %}
                             <div class="input-group">
                                 <input type="number" name="cantidad" class="form-control" min="1" max="5" value="1" required>

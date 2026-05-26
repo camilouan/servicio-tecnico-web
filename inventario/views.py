@@ -4,6 +4,7 @@ import logging
 from django.db import connection
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -211,6 +212,8 @@ def apartar_producto(request, producto_id):
         messages.warning(request, f'Solo puedes apartar {disponibles_para_ti} unidad(es) más de este producto hasta que tus apartados se entreguen, cancelen o expiren.')
         return redirect('productos')
 
+    success = False
+    message_text = ''
     if producto.stock_disponible >= cantidad:
         try:
             Apartado.objects.create(
@@ -219,11 +222,21 @@ def apartar_producto(request, producto_id):
                 cantidad=cantidad,
                 fecha_expiracion=timezone.now() + timezone.timedelta(hours=24)
             )
-            messages.success(request, f'Se apartaron correctamente {cantidad} unidad(es) de {producto.nombre}.')
+            message_text = f'Se apartaron correctamente {cantidad} unidad(es) de {producto.nombre}.'
+            messages.success(request, message_text)
+            success = True
         except ValidationError as error:
-            messages.error(request, error.messages[0] if getattr(error, 'messages', None) else 'No hay suficiente stock disponible para completar el apartado.')
+            message_text = error.messages[0] if getattr(error, 'messages', None) else 'No hay suficiente stock disponible para completar el apartado.'
+            messages.error(request, message_text)
     else:
-        messages.error(request, 'No hay suficiente stock disponible para completar el apartado.')
+        message_text = 'No hay suficiente stock disponible para completar el apartado.'
+        messages.error(request, message_text)
+
+    # Si la petición viene por AJAX, devuelvo JSON para que el front muestre el popup y redireccione.
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        if success:
+            return JsonResponse({'success': True, 'message': message_text, 'redirect_url': reverse('mis_apartados')})
+        return JsonResponse({'success': False, 'message': message_text}, status=400)
 
     return redirect('productos')
 
