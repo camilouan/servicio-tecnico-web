@@ -384,7 +384,7 @@
                 const modal = createModal(data.message || 'Haz apartado correctamente. Ahora haz el proceso de apartado.', redirectTarget);
                 modal.show();
                 // auto-redirect after a short delay; cancel if user closes modal manually
-                const autoRedirectId = setTimeout(() => { window.location.href = redirectTarget; }, 3500);
+                const autoRedirectId = setTimeout(() => { window.location.href = redirectTarget; }, 7000);
                 const modalEl = document.getElementById('apartadoSuccessModal');
                 if (modalEl) {
                     modalEl.addEventListener('hidden.bs.modal', function () { clearTimeout(autoRedirectId); }, { once: true });
