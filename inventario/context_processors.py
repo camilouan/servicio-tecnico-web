@@ -17,7 +17,11 @@ def admin_apartados_popup(request):
         return {'admin_popup_summary': None}
 
     try:
-        Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
+        # Evitar ejecutar la limpieza pesada en producción (varios workers pueden colisionar).
+        from django.conf import settings as _settings
+
+        if getattr(_settings, 'DEBUG', False):
+            Apartado.actualizar_apartados_vencidos_si_corresponde(throttle_seconds=60)
 
         estados_visibles = ['pendiente', 'confirmado']
         # Solo tomo apartados recientes para no cargar de más el admin.
