@@ -132,7 +132,7 @@ WSGI_APPLICATION = 'servicio_tecnico.wsgi.application'
 # -------------------------
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
-DB_CONN_MAX_AGE = int(os.environ.get('DB_CONN_MAX_AGE', '60'))
+DB_CONN_MAX_AGE = int(os.environ.get('DB_CONN_MAX_AGE', '0' if DATABASE_URL else '60'))
 DB_CONNECT_TIMEOUT = int(os.environ.get('DB_CONNECT_TIMEOUT', '5'))
 DB_STATEMENT_TIMEOUT_MS = int(os.environ.get('DB_STATEMENT_TIMEOUT_MS', '20000'))
 
@@ -152,6 +152,7 @@ if DATABASE_URL:
             'CONN_HEALTH_CHECKS': True,
             'OPTIONS': {
                 'connect_timeout': DB_CONNECT_TIMEOUT,
+                'sslmode': os.environ.get('DB_SSLMODE', 'require'),
                 'options': f'-c statement_timeout={DB_STATEMENT_TIMEOUT_MS}',
             },
         }
