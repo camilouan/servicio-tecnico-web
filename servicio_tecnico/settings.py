@@ -2,19 +2,19 @@ from pathlib import Path
 import os
 
 
-# Configuración base del proyecto Django.
+# Base del proyecto.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-local-dev-key')
 
+# En producción debe ir en False.
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
+# Dominios permitidos para el sitio.
 ALLOWED_HOSTS = ['.onrender.com', '.onrenderer.com', 'localhost', '127.0.0.1']
 
 
-# -------------------------
-# APPS
-# -------------------------
+# Apps instaladas.
 
 INSTALLED_APPS = [
     'jazzmin',
@@ -82,9 +82,7 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 
-# -------------------------
-# MIDDLEWARE
-# -------------------------
+# Cadena de middlewares del proyecto.
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -103,9 +101,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'servicio_tecnico.urls'
 
 
-# -------------------------
-# TEMPLATES
-# -------------------------
+# Configuración de plantillas HTML.
 
 TEMPLATES = [
     {
@@ -127,9 +123,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'servicio_tecnico.wsgi.application'
 
 
-# -------------------------
-# DATABASE
-# -------------------------
+# Base de datos.
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 DB_CONN_MAX_AGE = int(os.environ.get('DB_CONN_MAX_AGE', '0' if DATABASE_URL else '60'))
@@ -137,7 +131,7 @@ DB_CONNECT_TIMEOUT = int(os.environ.get('DB_CONNECT_TIMEOUT', '5'))
 DB_STATEMENT_TIMEOUT_MS = int(os.environ.get('DB_STATEMENT_TIMEOUT_MS', '20000'))
 
 if DATABASE_URL:
-    # En Render uso PostgreSQL; en local, si no hay DATABASE_URL, queda SQLite.
+    # En Render uso PostgreSQL.
     import urllib.parse
     parsed_url = urllib.parse.urlparse(DATABASE_URL)
     DATABASES = {
@@ -175,9 +169,7 @@ CACHES = {
 }
 
 
-# -------------------------
-# PASSWORD VALIDATION
-# -------------------------
+# Reglas de contraseña.
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -195,12 +187,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# -------------------------
-# LOGIN / SESSION SECURITY
-# -------------------------
-# Recomendado para este proyecto:
-# - 5 intentos fallidos => bloqueo temporal de 15 minutos
-# - sesión por inactividad => 30 minutos
+# Seguridad de login y sesión.
 LOGIN_MAX_FAILED_ATTEMPTS = int(os.environ.get('LOGIN_MAX_FAILED_ATTEMPTS', '5'))
 LOGIN_LOCKOUT_SECONDS = int(os.environ.get('LOGIN_LOCKOUT_SECONDS', '900'))
 SESSION_INACTIVITY_TIMEOUT = int(os.environ.get('SESSION_INACTIVITY_TIMEOUT', '1800'))
@@ -209,9 +196,7 @@ SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 
-# -------------------------
-# PASSWORD RESET / EMAIL
-# -------------------------
+# Correo para recuperación de contraseña.
 
 EMAIL_BACKEND = os.environ.get(
     'EMAIL_BACKEND',
@@ -227,9 +212,7 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'no
 PASSWORD_RESET_TIMEOUT = int(os.environ.get('PASSWORD_RESET_TIMEOUT', '3600'))
 
 
-# -------------------------
-# INTERNATIONALIZATION
-# -------------------------
+# Idioma y zona horaria.
 
 LANGUAGE_CODE = 'es-co'
 TIME_ZONE = 'America/Bogota'
@@ -238,9 +221,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-# -------------------------
-# STATIC FILES
-# -------------------------
+# Archivos estáticos.
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -251,9 +232,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 WHITENOISE_USE_FINDERS = True
 
 
-# -------------------------
-# MEDIA FILES (LOCAL DEV)
-# -------------------------
+# Archivos subidos por usuarios en local.
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
