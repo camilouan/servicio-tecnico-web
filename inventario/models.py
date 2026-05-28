@@ -18,7 +18,13 @@ def _fallback_image_path(name, fallback_map):
 
 
 class Usuario(AbstractUser):
+    """Modelo de usuario extendido.
 
+    contiene campos adicionales como
+    nombres, apellidos, teléfono y rol. Uso este modelo para
+    identificar si un usuario es cliente o administrador y llevar
+    trazabilidad básica (fecha de registro, foto, aceptación legal).
+    """
     ROLES = (
         ('cliente', 'Cliente'),
         ('administrador', 'Administrador'),
@@ -58,7 +64,13 @@ class Usuario(AbstractUser):
 
 
 class Categoria(models.Model):
+    """Categoría de productos.
 
+    Aquí guardo el nombre, la descripción y una imagen. La idea es
+    agrupar productos y tener una imagen por categoría. El método
+    `clean()` valida que la categoría tenga nombre y descripción
+    antes de guardarla.
+    """
     # Cada categoría agrupa productos y puede tener una imagen visible en el catálogo.
     nombre = models.CharField(max_length=100)
 
@@ -120,6 +132,13 @@ class Categoria(models.Model):
 
 
 class Producto(models.Model):
+
+    """Producto del catálogo.
+
+    representa un artículo con precio, stock
+    total y stock disponible. Las validaciones impiden valores
+    negativos y aseguran que el stock disponible no supere al total.
+    """
 
     # Producto que se muestra en el catálogo y que después se puede apartar.
     ESTADOS = (
@@ -225,6 +244,11 @@ class Producto(models.Model):
 
 
 class HeroBanner(models.Model):
+    """Banner principal para la landing.
+
+    Contiene título, subtítulo y una imagen de fondo. Se usa para
+    mostrar promociones o mensajes en la página principal.
+    """
     # Banner principal que aparece en la portada.
     titulo = models.CharField(
         max_length=255,
@@ -305,7 +329,18 @@ class Apartado(models.Model):
 
     @classmethod
     def actualizar_apartados_vencidos(cls):
-        # Aquí se liberan los apartados vencidos y se devuelve el stock al producto.
+        """Libero apartados vencidos y devuelvo stock al producto.
+
+        busco todos los apartados pendientes cuya
+        fecha de expiración ya pasó, sumo la cantidad por producto y
+        devuelvo ese stock al Producto.stock_disponible. Todo se hace
+        dentro de una transacción para mantener consistencia y al final
+        actualizo el estado de los apartados a 'expirado'. Devuelvo el
+        número total de apartados procesados.
+
+        Retorna:
+            int: número de apartados actualizados.
+        """
         motivo_expirado = 'Apartado expirado automáticamente por superar el tiempo límite.'
 
         with transaction.atomic():
@@ -341,23 +376,52 @@ class Apartado(models.Model):
 
     @classmethod
     def actualizar_apartados_vencidos_si_corresponde(cls, throttle_seconds=60):
-        # Evita que esta limpieza se ejecute demasiadas veces seguidas.
+        """Ejecuta la limpieza de apartados vencidos con throttling.
+
+        Uso una clave de caché global para evitar ejecuciones repetidas
+        en cortos intervalos (por ejemplo, si muchas peticiones llaman a
+        esta función). Si la clave se puede añadir, ejecuto la limpieza
+        y regreso el número de apartados actualizados; si no, devuelvo 0.
+        """
+
         if cache.add('apartados:expiracion:global_lock', '1', timeout=throttle_seconds):
             return cls.actualizar_apartados_vencidos()
         return 0
 
     def generar_codigo_verificacion(self):
+        """Genero un código de verificación único de 6 dígitos.
+
+        Lo explico así: intento números aleatorios de 6 dígitos hasta
+        encontrar uno que no exista en la tabla de apartados (evito
+        colisiones). Devuelvo el código como cadena con ceros a la
+        izquierda si hace falta.
+        """
+
         while True:
             codigo = f"{random.randint(0, 999999):06d}"
             if not Apartado.objects.filter(codigo_verificacion=codigo).exclude(pk=self.pk).exists():
                 return codigo
 
     def _cantidad_reservada_para_estado(self, estado, cantidad=None):
+        """Calculo cuánto stock ocupa un apartado según su estado.
+
+        solo algunos estados (pendiente, confirmado, entregado)
+        ocupan stock. Si el estado ocupa stock, devuelvo la cantidad
+        correspondiente; si no, devuelvo 0.
+        """
+
         cantidad = self.cantidad if cantidad is None else cantidad
         return cantidad if estado in self.ESTADOS_CON_STOCK_OCUPADO else 0
 
     def _ajustar_stock_producto(self, producto_id, delta_consumo):
-        # Ajusto el stock del producto con bloqueo de fila para no pisar cambios.
+        """Ajusto el `stock_disponible` de un producto de forma segura.
+
+         delta_consumo es la cantidad que se debe restar
+        (o sumar si es negativa) al stock disponible. Bloqueo la fila
+        con select_for_update() para evitar condiciones de carrera. Si
+        intento consumir más stock del disponible, lanzo `ValidationError`.
+        """
+
         if delta_consumo == 0:
             return
 
@@ -370,7 +434,14 @@ class Apartado(models.Model):
         producto.save(update_fields=['stock_disponible'])
 
     def save(self, *args, **kwargs):
-        # El guardado del apartado toca stock, estado y datos de confirmación.
+        """Guardo el apartado actualizando stock y campos de estado.
+
+        cuando creo o actualizo un `Apartado` debo
+        ajustar el stock del producto según el estado y la cantidad.
+        Este método calcula la diferencia entre el consumo anterior y
+        el nuevo, ajusta el stock en la misma transacción y completa
+        campos como fecha_confirmacion cuando se confirma.
+        """
         if not self.codigo_verificacion:
             self.codigo_verificacion = self.generar_codigo_verificacion()
 

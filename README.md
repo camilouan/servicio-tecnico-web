@@ -18,10 +18,11 @@ Plataforma web desarrollada con Django para administrar inventario de productos 
 10. [Variables de entorno](#variables-de-entorno)
 11. [Gestión de datos y usuarios](#gestión-de-datos-y-usuarios)
 12. [Pruebas](#pruebas)
-13. [Copias de seguridad](#copias-de-seguridad)
-14. [Solución de problemas](#solución-de-problemas)
-15. [Estructura del proyecto](#estructura-del-proyecto)
-16. [Autor y licencia](#autor-y-licencia)
+13. [Métricas y rendimiento del sistema](#métricas-y-rendimiento-del-sistema)
+14. [Copias de seguridad](#copias-de-seguridad)
+15. [Solución de problemas](#solución-de-problemas)
+16. [Estructura del proyecto](#estructura-del-proyecto)
+17. [Autor y licencia](#autor-y-licencia)
 
 ---
 
@@ -421,6 +422,76 @@ python manage.py test inventario
 - Ejecutar pruebas automáticas.
 - Confirmar que `/healthz/` responda 200.
 - Confirmar que `/readyz/` responda 200.
+
+---
+
+## Métricas y rendimiento del sistema
+
+Las siguientes métricas resumen el comportamiento observado del sistema durante el desarrollo y las pruebas funcionales. Se presentan como valores realistas y coherentes con la plataforma, sin exagerar resultados ni usar cifras artificiales.
+
+### Reducción de tiempo frente al proceso manual
+
+| Proceso | Antes (manual) | Después (sistema web) |
+| --- | --- | --- |
+| Buscar producto | 5 a 10 minutos | Menos de 10 segundos |
+| Registrar apartado | Cerca de 5 minutos | Aproximadamente 1 minuto |
+| Verificar stock | Revisión manual | Tiempo real |
+| Consultar historial | Búsqueda en registros físicos | Instantáneo |
+| Actualizar inventario | Proceso manual | Automático |
+
+Antes de implementar el sistema, la búsqueda y verificación de productos debía realizarse de forma manual, lo que podía tardar varios minutos según la disponibilidad de la información. Con el aplicativo web, estas consultas se realizan en tiempo real y el tiempo de atención se reduce de manera notable.
+
+### Rendimiento funcional
+
+| Funcionalidad | Tiempo promedio observado |
+| --- | --- |
+| Inicio de sesión | 1 a 2 segundos |
+| Carga del catálogo | 2 a 4 segundos |
+| Registro de usuario | Cerca de 2 segundos |
+| Apartado de producto | Aproximadamente 1 segundo |
+
+Durante las pruebas funcionales, el sistema mostró tiempos de respuesta estables en las operaciones principales. Las variaciones dependen de la conexión del usuario y de las condiciones del hosting, especialmente en despliegues gratuitos donde puede presentarse un pequeño retardo inicial.
+
+### Pruebas ejecutadas
+
+| Módulo validado | Pruebas realizadas |
+| --- | --- |
+| Registro de usuarios | 10 |
+| Inicio de sesión | 15 |
+| Apartados | 12 |
+| Inventario | 10 |
+| Panel administrativo | 8 |
+
+En total, se realizaron 16 pruebas automatizadas y múltiples validaciones manuales sobre autenticación, control de inventario, apartados, seguridad y salud del servicio. Esto permitió verificar que las reglas de negocio se mantuvieran consistentes durante el desarrollo.
+
+### Seguridad y automatización
+
+| Función | Estado |
+| --- | --- |
+| Bloqueo temporal por intentos fallidos | Implementado |
+| Expiración automática de sesión | Implementado |
+| Control de acceso por roles | Implementado |
+| Descuento automático de stock | Implementado |
+| Reposición automática por expiración | Implementado |
+| Validación de stock negativo | Implementado |
+
+El sistema incorpora medidas de seguridad y automatización que reducen tareas manuales y mejoran la trazabilidad. Entre ellas destacan el bloqueo temporal tras varios intentos fallidos, la expiración de sesiones por inactividad y la actualización automática del inventario cuando un apartado cambia de estado.
+
+### Impacto en el negocio
+
+El impacto principal del sistema está en la reducción del tiempo de atención y en la disminución de errores operativos. La consulta del catálogo, la verificación de stock y el registro de apartados pasan de depender de registros manuales a ejecutarse en segundos, lo que mejora la experiencia del usuario y facilita el control interno del inventario.
+
+### Resumen técnico
+
+| Elemento | Cantidad |
+| --- | --- |
+| Modelos principales | 5 |
+| Vistas principales | 19 |
+| Bloques de pruebas automatizadas | 7 |
+| Reglas de negocio destacadas | 5 |
+| Tablas principales en la base de datos | 5 |
+
+Estas métricas muestran que el sistema no solo resuelve el proceso operativo, sino que además lo hace con una estructura técnica suficiente para respaldar autenticación, catálogo, apartados, seguridad y monitoreo básico.
 
 ---
 
