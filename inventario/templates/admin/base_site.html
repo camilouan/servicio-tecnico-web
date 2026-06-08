@@ -314,13 +314,12 @@
     <a href="/" class="admin-back-home">
       <span>←</span>
       <span>Volver a la página principal</span>
-    </a>
-  </div>
-{% endif %}
-{% endblock %}
-
-{% block footer %}
-{{ block.super }}
+    <!--
+      Script: Resumen de apartados para el admin
+      Este script solo lo ven los administradores. Llama a una API que
+      devuelve un resumen rápido de los apartados (pendientes, confirmados,
+      los nuevos en 24h y los recientes) y actualiza el pequeño panel que
+      aparece como overlay. Si hay novedades se abre automáticamente para -->
 {% if request.user.is_staff or request.user.is_superuser %}
 <div id="adminApartadosOverlay" class="admin-apartados-overlay" aria-hidden="true">
   <div class="admin-apartados-modal" role="dialog" aria-modal="true" aria-labelledby="adminApartadosTitle">
@@ -377,6 +376,14 @@
   🔔 Resumen
 </button>
 
+<!--
+  Script: Resumen de apartados para el admin
+  Este script solo lo ven los administradores. Llama a una API que
+  devuelve un resumen rápido de los apartados (pendientes, confirmados,
+  los nuevos en 24h y los recientes) y actualiza el pequeño panel que
+  aparece como overlay. Si hay novedades se abre automáticamente para
+  que el admin lo vea sin cambiar de página.
+-->
 <script>
   (function () {
     const apiUrl = "{% url 'admin_apartados_resumen_api' %}";

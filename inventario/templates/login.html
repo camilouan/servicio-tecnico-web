@@ -68,6 +68,14 @@
     </div>
 </section>
 
+<!--
+    Script: Validaciones y UX del formulario de login
+    Mejora la experiencia cuando el usuario quiere iniciar sesión: muestra
+    mensajes útiles si no escribió usuario o contraseña, valida en el
+    cliente antes de enviar y permite mostrar/ocultar la contraseña con
+    el icono de ojo. No sustituye la seguridad del servidor, solo ayuda
+    al usuario a entender mejor qué debe escribir.
+-->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('login-form');

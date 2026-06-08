@@ -104,6 +104,15 @@
     </div>
 </section>
 
+<!--
+    Script: Validación en el registro (cliente)
+    Este código ayuda a que la gente no cometa errores al crear cuenta: checa
+    que el correo tenga formato y no esté ya registrado (consulta rápida
+    al servidor), valida las reglas de la contraseña (largo, mayúscula,
+    número y carácter especial) y que ambas contraseñas coincidan. También
+    permite mostrar/ocultar las contraseñas con los botones de ojo.
+    Es una capa amigable antes de enviar al servidor.
+-->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('registro-form');
