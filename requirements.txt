@@ -1,20 +1,68 @@
-﻿asgiref==3.11.1
+﻿# asgiref ayuda a Django con pequeñas partes asíncronas
+asgiref==3.11.1
+
+# certifi contiene certificados de confianza para conexiones HTTPS.
+# Lo usamos indirectamente cuando subimos imágenes o hacemos llamadas HTTP.
 certifi==2026.2.25
+
+# charset-normalizer arregla problemas de codificación en respuestas web
+# Aparece como dependencia de requests y evita errores con texto raro
 charset-normalizer==3.4.4
+
 cloudinary==1.44.1
+
 Django==5.2.11
+
+# django-cloudinary-storage conecta Django con Cloudinary para guardar media
+# ,asigna las imágenes subidas al storage de Cloudinary en lugar del disco local
 django-cloudinary-storage==0.3.0
+
+# gunicorn: servidor para producción. En despliegues Linux se usa para ejecutar
+# la app en Render se suele usar algo similar
 gunicorn==25.1.0
+
+# idna hace que los nombres de dominio con caracteres internacionales funcionen
+# bien en las URLs que usamos para subir o descargar imágenes
 idna==3.11
+
+# packaging: utilidades para interpretar versiones y formatos; varias librerías
+# lo usan internamente.
 packaging==26.0
+
+# pillow: maneja imágenes (abrir, redimensionar, validar). Lo usamos cuando
+# trabajamos con miniaturas o comprobamos imágenes antes de subirlas.
 pillow==12.1.1
+
+# requests: cliente HTTP. Lo usamos para descargar imágenes remotas en el seed
+# o para cualquier integración que necesite llamar otra URL.
 requests==2.32.5
+
+# six: ayuda a librerías que todavía mantienen compatibilidad entre Python 2/3
 six==1.17.0
+
+# sqlparse: mejora cómo se muestra o formatea SQL en herramientas y en admin.
 sqlparse==0.5.5
+
+# typing_extensions: trae mejoras de tipado que usan algunas librerías modernas.
 typing_extensions==4.15.0
+
+# tzdata: datos de zonas horarias; Django los usa para mostrar/parsear fechas.
 tzdata==2025.3
+
+# urllib3: la base de conexiones HTTP que usa requests; maneja tiempos de espera  y reintentos a bajo nivel.
 urllib3==2.6.3
+
+# whitenoise: nos permite servir archivos estáticos CSS JSS imágenes 
+#,directamente desde Django en producción, sin necesidad de configurar un servidor aparte para eso   
 whitenoise==6.11.0
+
+# psycopg2-binary: driver para Postgres. Se instala en Linux no en Windows
+# y es lo que Django usa para conectarse a la base de datos en producción
 psycopg2-binary==2.9.10; sys_platform != "win32"
+
+# django-jazzmin: mejora la apariencia del panel de administración
+# lo usamos para que el admin sea más cómodo y moderno para los administradores.
 django-jazzmin==3.0.4
+
+
 

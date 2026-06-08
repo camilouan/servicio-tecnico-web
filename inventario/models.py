@@ -335,7 +335,7 @@ class Apartado(models.Model):
         fecha de expiración ya pasó, sumo la cantidad por producto y
         devuelvo ese stock al Producto.stock_disponible. Todo se hace
         dentro de una transacción para mantener consistencia y al final
-        actualizo el estado de los apartados a 'expirado'. Devuelvo el
+        actualizo el estado de los apartados a expirado , devuelvo el
         número total de apartados procesados.
 
         Retorna:
@@ -379,8 +379,8 @@ class Apartado(models.Model):
         """Ejecuta la limpieza de apartados vencidos con throttling.
 
         Uso una clave de caché global para evitar ejecuciones repetidas
-        en cortos intervalos (por ejemplo, si muchas peticiones llaman a
-        esta función). Si la clave se puede añadir, ejecuto la limpieza
+        en cortos intervalos por ejemplo, si muchas peticiones llaman a
+        esta función, Si la clave se puede añadir, ejecuto la limpieza
         y regreso el número de apartados actualizados; si no, devuelvo 0.
         """
 
@@ -391,10 +391,10 @@ class Apartado(models.Model):
     def generar_codigo_verificacion(self):
         """Genero un código de verificación único de 6 dígitos.
 
-        Lo explico así: intento números aleatorios de 6 dígitos hasta
-        encontrar uno que no exista en la tabla de apartados (evito
-        colisiones). Devuelvo el código como cadena con ceros a la
-        izquierda si hace falta.
+        intento números aleatorios de 6 dígitos hasta
+        encontrar uno que no exista en la tabla de apartados evito
+        colisiones devuelvo el código como cadena con ceros a la
+        izquierda si hace falta para completar los 6 dígitos.
         """
 
         while True:
@@ -405,7 +405,7 @@ class Apartado(models.Model):
     def _cantidad_reservada_para_estado(self, estado, cantidad=None):
         """Calculo cuánto stock ocupa un apartado según su estado.
 
-        solo algunos estados (pendiente, confirmado, entregado)
+        solo algunos estados pendiente, confirmado, entregado
         ocupan stock. Si el estado ocupa stock, devuelvo la cantidad
         correspondiente; si no, devuelvo 0.
         """
@@ -417,9 +417,9 @@ class Apartado(models.Model):
         """Ajusto el `stock_disponible` de un producto de forma segura.
 
          delta_consumo es la cantidad que se debe restar
-        (o sumar si es negativa) al stock disponible. Bloqueo la fila
+        o sumar si es negativa al stock disponible bloqueo la fila
         con select_for_update() para evitar condiciones de carrera. Si
-        intento consumir más stock del disponible, lanzo `ValidationError`.
+        intento consumir más stock del disponible, lanzo ValidationError.
         """
 
         if delta_consumo == 0:
@@ -436,7 +436,7 @@ class Apartado(models.Model):
     def save(self, *args, **kwargs):
         """Guardo el apartado actualizando stock y campos de estado.
 
-        cuando creo o actualizo un `Apartado` debo
+        cuando creo o actualizo un Apartado debo
         ajustar el stock del producto según el estado y la cantidad.
         Este método calcula la diferencia entre el consumo anterior y
         el nuevo, ajusta el stock en la misma transacción y completa

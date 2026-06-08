@@ -1,4 +1,5 @@
 from pathlib import Path
+import importlib.util
 import os
 
 
@@ -11,13 +12,14 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-local-dev-key')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # Dominios permitidos para el sitio.
-ALLOWED_HOSTS = ['.onrender.com', '.onrenderer.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['.onrender.com', '.onrenderer.com', 'localhost', '127.0.0.1', 'testserver']
 
 
 # Apps instaladas.
 
+JAZZMIN_AVAILABLE = importlib.util.find_spec('jazzmin') is not None
+
 INSTALLED_APPS = [
-    'jazzmin',
     'inventario',
 
     'django.contrib.admin',
@@ -31,6 +33,9 @@ INSTALLED_APPS = [
     'cloudinary',
     'cloudinary_storage',
 ]
+
+if JAZZMIN_AVAILABLE:
+    INSTALLED_APPS.insert(0, 'jazzmin')
 
 JAZZMIN_SETTINGS = {
     'site_title': 'Servicio Técnico Admin',

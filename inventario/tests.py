@@ -47,6 +47,10 @@ class ApartadoStockAutomationTests(BaseInventarioTestCase):
         )
 
     def test_cancelar_apartado_repone_stock(self):
+        # CP18 / RF17: este caso valida que, al cancelar un apartado,
+        # el stock del producto vuelve a subir como se espera.
+        # Se valida mirando que stock_disponible baje cuando se crea el
+        # apartado y luego vuelva al valor original cuando el estado cambia.
         apartado = Apartado.objects.create(
             usuario=self.usuario,
             producto=self.producto,
@@ -65,6 +69,10 @@ class ApartadoStockAutomationTests(BaseInventarioTestCase):
         self.assertEqual(self.producto.stock_disponible, 10)
 
     def test_expirar_apartados_vencidos_repone_stock(self):
+        # CP18 / RF17: revisa la reposición automática cuando un apartado
+        # ya venció y el sistema lo marca como expirado.
+        # Se valida comprobando tres cosas: cuántos apartados se actualizaron,
+        # que el estado pase a `expirado` y que el stock regrese completo.
         apartado = Apartado.objects.create(
             usuario=self.usuario,
             producto=self.producto,
@@ -86,6 +94,10 @@ class ApartadoStockAutomationTests(BaseInventarioTestCase):
         self.assertEqual(self.producto.stock_disponible, 10)
 
     def test_expiracion_throttled_evita_ejecuciones_repetidas(self):
+        # CP18 / RF17: comprueba que la limpieza de apartados vencidos no
+        # se ejecute dos veces seguidas por accidente.
+        # Se valida esperando que la primera ejecución procese 1 apartado y
+        # la segunda devuelva 0 por el bloqueo temporal de caché.
         Apartado.objects.create(
             usuario=self.usuario,
             producto=self.producto,
@@ -110,6 +122,10 @@ class LoginSecurityTests(BaseInventarioTestCase):
         SESSION_SAVE_EVERY_REQUEST=True,
     )
     def test_login_is_temporarily_blocked_after_max_failed_attempts(self):
+        # CP04 / RF3: este caso representa el inicio de sesión fallido y
+        # confirma que el sistema bloquea temporalmente el acceso.
+        # Se valida haciendo varios intentos fallidos y revisando que el
+        # mensaje de bloqueo aparezca y que la sesión no quede autenticada.
         for _ in range(3):
             response = self.client.post(
                 self.login_url,
@@ -131,6 +147,10 @@ class LoginSecurityTests(BaseInventarioTestCase):
         SESSION_SAVE_EVERY_REQUEST=True,
     )
     def test_inactive_session_is_closed_on_next_request(self):
+        # CP03 / RF3 y CP04 / RF3: ayuda a verificar que, después del login,
+        # una sesión inactiva se cierre al volver a usar el sistema.
+        # Se valida forzando una actividad vieja en la sesión y comprobando
+        # que el siguiente acceso redirige al login.
         self.client.post(
             self.login_url,
             {'username': self.usuario.username, 'password': 'ClaveSegura123!'},
@@ -149,6 +169,10 @@ class LoginSecurityTests(BaseInventarioTestCase):
 
 class LegalAcceptanceTests(BaseInventarioTestCase):
     def test_registration_requires_legal_acceptance(self):
+        # CP01 / RF1 y CP02 / RF2: el registro pide aceptar políticas para
+        # crear la cuenta y evita guardar usuarios incompletos.
+        # Se valida enviando el formulario sin aceptar políticas, esperando
+        # un error en pantalla y confirmando que el usuario no se crea.
         response = self.client.post(
             reverse('registro'),
             {
@@ -170,6 +194,10 @@ class LegalAcceptanceTests(BaseInventarioTestCase):
         self.assertFalse(get_user_model().objects.filter(username='nuevo_cliente').exists())
 
     def test_legal_banner_is_visible_on_first_visit(self):
+        # CP01 / RF1: comprueba que el banner legal se muestre al entrar por
+        # primera vez, como parte del registro y la aceptación de políticas.
+        # Se valida revisando que el texto legal y el ID del banner salgan en
+        # la respuesta de la landing.
         response = self.client.get(reverse('landing'))
         self.assertContains(response, 'Al continuar navegando en esta plataforma')
         self.assertContains(response, 'legalConsentBanner')
@@ -177,11 +205,16 @@ class LegalAcceptanceTests(BaseInventarioTestCase):
 
 class HealthChecksTests(TestCase):
     def test_healthz_responde_ok(self):
+        # Este test no está dentro del cuadro funcional, pero sirve para
+        # revisar que el sistema siga vivo y responda correctamente.
+        # Se valida con un `200` y con un JSON que diga `status: ok`.
         response = self.client.get(reverse('healthz'))
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'status': 'ok'})
 
     def test_readyz_responde_ready(self):
+        # Igual que el anterior, este chequea que la app esté lista para usar.
+        # Se valida con un `200` y con un JSON que diga `status: ready`.
         response = self.client.get(reverse('readyz'))
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {'status': 'ready'})
@@ -194,6 +227,9 @@ class ModelValidationTests(TestCase):
         Este test protege la calidad del catálogo porque confirma que el modelo
         no acepta categorías sin nombre ni descripción.
         """
+        # CP06 / RF5 y CP09 / RF8: aunque no crea productos todavía, este
+        # test asegura que la base de categorías del inventario no se guarde mal.
+        # Se valida llamando `full_clean()` y esperando un ValidationError
         categoria = Categoria(nombre=' ', descripcion=' ', activa=True)
 
         with self.assertRaises(ValidationError) as context:
@@ -207,6 +243,10 @@ class ModelValidationTests(TestCase):
         Sirve para evitar que el stock disponible sea mayor al stock total, una
         condición que después rompe la lógica de apartados.
         """
+        # CP06 / RF5, CP07 / RF6 y CP10 / RF9: este control ayuda a que el
+        # inventario se cree y se edite con números coherentes.
+        # Se valida ejecutando full_clean() y comprobando que el error de
+        # stock inconsistente realmente aparezca.
         categoria = Categoria.objects.create(
             nombre='Accesorios',
             descripcion='Prueba de validación de producto',
@@ -235,6 +275,10 @@ class FormValidationTests(TestCase):
         Ayuda a detectar regresiones en el alta de usuarios y confirma que el
         formulario marca la aceptación legal al crear la cuenta.
         """
+        # CP01 / RF1 y CP02 / RF2: cubre el registro de usuario y la parte
+        # legal que pide aceptar políticas antes de crear la cuenta.
+        # Se valida con form.is_valid(), luego save(), y revisando los
+        # campos acepta_politicas y fecha_aceptacion_politicas
         form = RegistroForm(
             data={
                 'username': 'cliente_nuevo',
@@ -263,6 +307,10 @@ class FormValidationTests(TestCase):
         Este test protege la regla de seguridad que limita la frecuencia de
         cambio de clave para reducir abusos o cambios accidentales.
         """
+        # CP03 / RF3: no es login como tal, pero sí protege la seguridad del
+        # acceso al impedir cambios de contraseña demasiado seguidos.
+        # Se valida dejando una fecha reciente de cambio y esperando que el
+        # formulario salga inválido con el mensaje de bloqueo semanal.
         usuario = get_user_model().objects.create_user(
             username='seguridad_test',
             password='ClaveSegura123!',
@@ -328,6 +376,10 @@ class CatalogoYApartadosTests(BaseInventarioTestCase):
         Sirve para detectar regresiones en la vista de productos, especialmente
         en el filtrado por categoría y por existencia de stock.
         """
+        # CP09 / RF8 y CP10 / RF9: esta prueba confirma que el catálogo se ve
+        # y que los filtros por categoría, disponibilidad y orden funcionan.
+        # Se valida consultando la vista con parámetros y revisando qué
+        # productos aparecen o no aparecen en la respuesta.
         response = self.client.get(
             reverse('productos'),
             {'categoria': 'Celulares', 'disponibilidad': 'disponibles', 'orden': 'precio_desc'},
@@ -343,6 +395,10 @@ class CatalogoYApartadosTests(BaseInventarioTestCase):
         Este test protege el comportamiento central del negocio: crear un
         apartado debe bajar el stock disponible y generar el registro asociado.
         """
+        # CP11 / RF10, CP12 / RF11, CP13 / RF12 y CP14 / RF13: este es el
+        # flujo principal de apartados, porque crea la reserva y descuenta stock.
+        # Se valida iniciando sesión, enviando la cantidad a apartar y
+        # comprobando que exista el Apartado y que el stock baje.
         self.client.force_login(self.usuario)
 
         response = self.client.post(
@@ -362,6 +418,10 @@ class CatalogoYApartadosTests(BaseInventarioTestCase):
         Esto ayuda a detectar fugas de información entre usuarios en el panel de
         seguimiento de apartados.
         """
+        # CP15 / RF14: revisa la consulta de apartados del usuario para que
+        # solo se muestren sus datos en la respuesta.
+        # Se valida autenticando al usuario, creando un apartado y revisando
+        # que el JSON traiga exactamente ese registro con sus campos correctos.
         self.client.force_login(self.usuario)
         apartado = Apartado.objects.create(
             usuario=self.usuario,
