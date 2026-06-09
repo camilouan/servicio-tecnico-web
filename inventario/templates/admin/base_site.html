@@ -317,6 +317,10 @@
     </a>
   </div>
 {% endif %}
+{% endblock %}
+
+{% block extrabody %}
+{{ block.super }}
 {% if request.user.is_staff or request.user.is_superuser %}
 <div id="adminApartadosOverlay" class="admin-apartados-overlay" aria-hidden="true">
   <div class="admin-apartados-modal" role="dialog" aria-modal="true" aria-labelledby="adminApartadosTitle">
