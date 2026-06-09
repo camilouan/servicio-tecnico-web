@@ -352,12 +352,16 @@ class Apartado(models.Model):
                 )
             )
 
-            total_actualizados = vencidos.count()
+            vencidos_ids = list(vencidos.values_list('pk', flat=True))
+            total_actualizados = len(vencidos_ids)
             if total_actualizados == 0:
                 return 0
 
-            cantidades_por_producto = vencidos.values('producto_id').annotate(
-                total=models.Sum('cantidad')
+            vencidos_para_actualizar = cls.objects.filter(pk__in=vencidos_ids)
+            cantidades_por_producto = (
+                vencidos_para_actualizar
+                .values('producto_id')
+                .annotate(total=models.Sum('cantidad'))
             )
 
             for item in cantidades_por_producto:
@@ -366,11 +370,11 @@ class Apartado(models.Model):
                     stock_disponible=models.F('stock_disponible') + item['total']
                 )
 
-            vencidos.filter(
+            vencidos_para_actualizar.filter(
                 models.Q(motivo_cancelacion__isnull=True) | models.Q(motivo_cancelacion='')
             ).update(motivo_cancelacion=motivo_expirado)
 
-            vencidos.update(estado='expirado')
+            vencidos_para_actualizar.update(estado='expirado')
 
             return total_actualizados
 
