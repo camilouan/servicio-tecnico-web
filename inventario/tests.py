@@ -202,6 +202,29 @@ class LegalAcceptanceTests(BaseInventarioTestCase):
         self.assertContains(response, 'Al continuar navegando en esta plataforma')
         self.assertContains(response, 'legalConsentBanner')
 
+class AdminPopupRenderingTests(TestCase):
+    def test_staff_admin_renderiza_popup_de_apartados(self):
+        """Asegura que Jazzmin renderice el popup dentro del bloque correcto."""
+        usuario = get_user_model().objects.create_user(
+            username='staff_popup',
+            password='ClaveSegura123!',
+            email='staff-popup@test.com',
+            nombres='Staff',
+            apellidos='Popup',
+            telefono='3000000000',
+            documento_identidad='555555555',
+            direccion='Calle Admin',
+            ciudad='Bogotá',
+            is_staff=True,
+        )
+
+        self.client.force_login(usuario)
+        response = self.client.get(reverse('admin:index'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'adminApartadosOverlay')
+        self.assertContains(response, 'openAdminApartadosPopup')
+
 
 class HealthChecksTests(TestCase):
     def test_healthz_responde_ok(self):

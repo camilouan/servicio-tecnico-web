@@ -319,7 +319,7 @@
 {% endif %}
 {% endblock %}
 
-{% block extrabody %}
+{% block extrajs %}
 {{ block.super }}
 {% if request.user.is_staff or request.user.is_superuser %}
 <div id="adminApartadosOverlay" class="admin-apartados-overlay" aria-hidden="true">
